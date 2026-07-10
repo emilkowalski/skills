@@ -157,19 +157,23 @@ Springs feel more natural than duration-based animations because they simulate r
 
 ### Spring-based mouse interactions
 
-Tying visual changes directly to mouse position feels artificial because it lacks motion. Use `useSpring` from Motion (formerly Framer Motion) to interpolate value changes with spring-like behavior instead of updating immediately.
+Tying visual changes directly to mouse position feels artificial because it lacks motion. Use `useSpring` from Motion to interpolate value changes with spring-like behavior instead of updating immediately. Initialize the spring once, then update its target from the pointer handler with `.set()`.
 
 ```jsx
-import { useSpring } from 'framer-motion';
+import { useSpring } from 'motion/react';
 
 // Without spring: feels artificial, instant
 const rotation = mouseX * 0.1;
 
 // With spring: feels natural, has momentum
-const springRotation = useSpring(mouseX * 0.1, {
+const springRotation = useSpring(0, {
   stiffness: 100,
   damping: 10,
 });
+
+function updateRotation(mouseX) {
+  springRotation.set(mouseX * 0.1);
+}
 ```
 
 This works because the animation is **decorative** — it doesn't serve a function. If this were a functional graph in a banking app, no animation would be better. Know when decoration helps and when it hinders.
