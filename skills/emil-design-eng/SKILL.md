@@ -677,3 +677,7 @@ When reviewing UI code, check for:
 | Framer Motion `x`/`y` props under load     | Use `transform: "translateX()"` for hardware acceleration        |
 | Same enter/exit transition speed           | Make exit faster than enter (e.g., enter 2s, exit 200ms)         |
 | Elements all appear at once                | Add stagger delay (30-80ms between items)                        |
+
+## Companion skill
+
+For the full interface review workflow — tokens, feature anatomy, state models, Mobbin + ScreensDesign research, product psychology, and before/after audit tables — read and follow **`make-interfaces-feel-better`** after applying this skill’s animation rules. Invoke: `/make-interfaces-feel-better`.

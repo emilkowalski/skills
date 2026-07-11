@@ -44,8 +44,8 @@ This is your shortcut to great interfaces. A shortcut to stand out in a sea of s
 - **[emil-design-eng](./skills/emil-design-eng/SKILL.md)** — The main skill that consists of mostly animation, but also some design advice.
 - **[review-animations](./skills/review-animations/SKILL.md)** — Review your animations in a strict way, based on my rules.
 - **[improve-animations](./skills/improve-animations/SKILL.md)** — Audit all the animations in your codebase and get prioritized, self-contained plans that any agent can execute.
-- **[animation-vocabulary](./skills/animation-vocabulary/SKILL.md)** — Get better animations from an AI by telling it exactly what you want by using the right words.
 - **[apple-design](./skills/apple-design/SKILL.md)** — Apple's principles for interface design and fluid motion, distilled from their WWDC design talks and translated for the web.
+- **[make-interfaces-feel-better](./skills/make-interfaces-feel-better/SKILL.md)** — Full UI review stack: tokens, feature structure, Mobbin/ScreensDesign research, motion polish, and product psychology. Use with Emil's animation skills for end-to-end interface quality. Invoke: `/make-interfaces-feel-better`.
 
 ### Improve animations
 
