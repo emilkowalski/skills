@@ -106,6 +106,29 @@ Close with an explicit decision:
 
 Be specific and cite `file:line`. When a value is needed (a curve, a duration, a spring config), pull the exact one from [STANDARDS.md](STANDARDS.md) rather than approximating.
 
+## React Native (Reanimated + Gesture Handler)
+
+The Ten Standards hold unchanged in a React Native codebase — only the medium changes. When the diff is RN (Reanimated `withTiming`/`withSpring`/`useSharedValue`, or legacy `Animated`), review against these RN forms. For precise values, see the RN notes in [STANDARDS.md](STANDARDS.md).
+
+Standard → RN form:
+
+- **#3 Responsive easing** → strong custom `Easing.bezier(...)` via `withTiming`; **`Easing.in(...)` on UI is a block** (same reason as web `ease-in`).
+- **#4 Sub-300ms UI** → identical duration budget; RN's UI thread does not buy a bigger budget.
+- **#5 Origin & physical correctness** → never `scale(0)` (start `0.95` + opacity); origin-aware popovers use RN 0.74+ `transformOrigin` or the translate→scale→translate trick; modals stay centered.
+- **#6 Interruptibility** → gesture/rapid motion must retarget a shared value (`withSpring`/`withTiming` reassignment or spring velocity handoff), **not** `Animated.sequence`/keyframes that restart from zero.
+- **#7 GPU-only → native-driver-safe** → animate `transform`/`opacity` only. Reanimated worklets already run on the UI thread; legacy `Animated` **must** set `useNativeDriver: true` (which supports only transform/opacity). Animating `width`/`height`/`margin`/`padding`/`top`/`left`/`flex`/`backgroundColor` is a performance finding.
+- **#8 Accessibility** → `useReducedMotion()` (Reanimated) / `AccessibilityInfo.isReduceMotionEnabled()`; gentler, not zero. Hover-gating is **N/A** on mobile (relevant again only on RN-web / tvOS focus).
+
+RN-specific escalation triggers (each is a finding on sight):
+
+- `useNativeDriver: false` or omitted on a legacy `Animated` transform/opacity animation.
+- Animating layout props (`width`/`height`/`flex`/`top`/`left`) instead of `transform`.
+- `Easing.in(...)` on a UI element; `scale(0)` entrance.
+- Gesture-driven or rapidly-retriggered UI built from `Animated.sequence` / non-retargeting keyframes.
+- Missing `useReducedMotion()` on movement-heavy animation.
+- Reading/writing `.value` on the JS thread in a hot path (scroll/list/gesture callbacks) instead of inside a worklet.
+- Hardcoded pixel offsets where a screen-relative value or percentage `translateY` is correct.
+
 ## Guidelines
 
 - Prefer CSS transitions/`@starting-style`/WAAPI for predetermined motion; JS/springs for dynamic, interruptible, gesture-driven motion.
