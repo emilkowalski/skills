@@ -69,6 +69,8 @@ CSS **transitions** retarget from the current state mid-animation; **keyframes**
 
 Hunt for: `@keyframes` on toasts/toggles/rapidly-triggered UI, gesture handlers that tween with fixed-duration keyframes, drags without velocity-based dismissal (dismiss on `Math.abs(distance)/elapsedMs > ~0.11`, not distance thresholds alone), hard stops at drag boundaries instead of rising friction.
 
+**React Native:** interruptible motion retargets a shared value (`withTiming`/`withSpring` reassignment, spring velocity handoff). Flag `Animated.sequence`/keyframes on gesture-driven or rapidly-retriggered UI.
+
 ## 5. Performance
 
 - **Animate `transform` and `opacity` only.** `width`/`height`/`margin`/`padding`/`top`/`left` trigger layout + paint + composite.
@@ -79,6 +81,8 @@ Hunt for: `@keyframes` on toasts/toggles/rapidly-triggered UI, gesture handlers 
 - Keep transition-time `filter: blur()` under 20px — heavy blur is expensive, especially in Safari.
 
 Hunt for: `transition: all`, animated layout properties, Framer Motion shorthand props on busy pages, `setProperty('--x', …)` driving child transforms, rAF loops doing what CSS could.
+
+**React Native:** prefer Reanimated (UI-thread worklets) over legacy `Animated`. If legacy `Animated` is used, `useNativeDriver: true` is mandatory and limits you to `transform`/`opacity`. Flag animation of `width`/`height`/`margin`/`padding`/`top`/`left`/`flex`/`backgroundColor`, and `.value` reads/writes on the JS thread in scroll/list/gesture hot paths.
 
 ## 6. Accessibility
 
@@ -114,3 +118,5 @@ The additive category — places that don't animate but should:
 - `translate` percentages (`translateY(100%)` = element's own height) and `clip-path: inset()` reveals as tools for these — no hardcoded pixel offsets.
 
 Report at most a handful, grounded in actual UX seams you observed — not a wishlist.
+
+**React Native:** missing `Pressable` press feedback; list mounts without `entering={FadeIn}`; reordering lists without `layout={LinearTransition}`; screen/route transitions with no motion; counters without `fontVariant: ['tabular-nums']`.
