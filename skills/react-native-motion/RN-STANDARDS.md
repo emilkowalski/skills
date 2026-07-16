@@ -1,6 +1,6 @@
 # React Native Motion Standards Reference
 
-Reanimated 3 + Gesture Handler 2 mechanics for Emil Kowalski's animation standards. Same values, same decisions — translated to the RN runtime. For the "why" behind any rule, follow the linked section in the web original.
+Reanimated 3/4 + Gesture Handler 2 mechanics for Emil Kowalski's animation standards. Same values, same decisions — translated to the RN runtime. For the "why" behind any rule, follow the linked section in the web original.
 
 ## Easing
 
@@ -67,7 +67,7 @@ This is the biggest RN-specific fork from the web rules, because RN has two anim
 
 **Reanimated worklets run on the UI thread**, not the JS thread — this is RN's analogue of CSS running off the main thread. A `useAnimatedStyle` callback is compiled to run on the UI thread every frame, independent of JS thread load (script execution, network responses, list re-renders). There is no `useNativeDriver` flag to set for Reanimated — it's UI-thread by construction.
 
-**The legacy `Animated` API is different and stricter.** If you're touching `Animated.timing`, `Animated.spring`, or `Animated.Value` directly (not Reanimated), you MUST pass `useNativeDriver: true` or the animation runs on the JS thread and drops frames under load — exactly like a Framer Motion shorthand falling back to `requestAnimationFrame`. But the native driver only supports **`transform` and `opacity`**. It cannot animate layout properties — `width`, `height`, `margin`, `padding`, `top`, `left` — because those force a layout pass, and a layout pass has to run on the JS thread regardless of the flag. `backgroundColor` fails for a different reason: it's not a layout property, but the legacy native driver has no native color interpolation, so it also falls back to the JS thread ("Style property `backgroundColor` is not supported by native animated module"). This is the RN form of "only animate transform and opacity": the web rule exists because those properties skip layout/paint; the RN rule exists because they're the only ones the native driver can execute at all — for color, reach for a Reanimated worklet instead, which interpolates color on the UI thread.
+**The legacy `Animated` API is different and stricter.** If you're touching `Animated.timing`, `Animated.spring`, or `Animated.Value` directly (not Reanimated), you MUST pass `useNativeDriver: true` or the animation runs on the JS thread and drops frames under load — exactly like a Framer Motion shorthand falling back to `requestAnimationFrame`. But the native driver only supports **`transform` and `opacity`**. It cannot animate layout properties — `width`, `height`, `margin`, `padding`, `top`, `left` — because those force a layout pass, and a layout pass has to run on the JS thread regardless of the flag. `backgroundColor` fails for a different reason: it's not a layout property, but the legacy native driver historically couldn't interpolate color, and still can't for a plain `Animated.Value` animating to a color string, so it falls back to the JS thread ("Style property `backgroundColor` is not supported by native animated module"). This is the RN form of "only animate transform and opacity": the web rule exists because those properties skip layout/paint; the RN rule exists because they're the only ones the legacy native driver can reliably execute — for color, reach for a Reanimated worklet, which interpolates color on the UI thread.
 
 Practical implications:
 - Prefer Reanimated over legacy `Animated` for anything performance-sensitive — it sidesteps the whole `useNativeDriver` limitation.
@@ -97,7 +97,7 @@ const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
 > Web original: [STANDARDS.md → Physicality](../review-animations/STANDARDS.md).
 
-RN gotcha: there is no `transform-origin` before React Native 0.76. RN 0.76+ adds a limited `transformOrigin` style prop that works for the common cases:
+RN gotcha: there is no `transform-origin` before React Native 0.74. RN 0.74+ adds a limited `transformOrigin` style prop that works for the common cases:
 
 ```tsx
 <Animated.View style={[style, { transformOrigin: 'top left' }]} />

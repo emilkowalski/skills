@@ -5,7 +5,7 @@ description: Emil Kowalski's animation & design-engineering philosophy, translat
 
 # React Native Motion
 
-This is Emil Kowalski's design-engineering philosophy applied to React Native. For the full version and the deeper "why" behind every rule, read the web original: [emil-design-eng](../emil-design-eng/SKILL.md). Everything here targets **Reanimated 3/4 + react-native-gesture-handler 2** as the default stack; the legacy `Animated` API and Moti are noted only where their behavior actually differs from that default.
+This is Emil Kowalski's design-engineering philosophy applied to React Native. For the full version and the deeper "why" behind every rule, read the web original: [emil-design-eng](../emil-design-eng/SKILL.md). Everything here targets **Reanimated 3/4 + react-native-gesture-handler 2** as the default stack; the legacy `Animated` API is noted only where its behavior actually differs from that default.
 
 ## Core philosophy (compressed)
 

@@ -30,7 +30,7 @@ Every animation in the diff is measured against these. A violation is a finding.
 
 4. **Sub-300ms UI.** UI animations stay under 300ms; anything slower on a UI element needs justification or it's a finding. Per-element budgets live in RN-STANDARDS.md.
 
-5. **Physicality & origin.** Never animate from `scale(0)` — start at `scale(0.95)` + `opacity: 0`, same as the web rule; nothing appears from nothing on a phone screen either. Origin-aware popovers scale from their trigger, not center: use `transformOrigin` on RN 0.76+, or the translate→scale→translate trick on older RN (see RN-STANDARDS.md → Transform origin). Modals are exempt — they stay centered.
+5. **Physicality & origin.** Never animate from `scale(0)` — start at `scale(0.95)` + `opacity: 0`, same as the web rule; nothing appears from nothing on a phone screen either. Origin-aware popovers scale from their trigger, not center: use `transformOrigin` on RN 0.74+, or the translate→scale→translate trick on older RN (see RN-STANDARDS.md → Transform origin). Modals are exempt — they stay centered.
 
 6. **Interruptibility.** Rapidly-triggered or gesture-driven motion (toggles, drag-to-dismiss, repeated taps) must retarget from the current value — a shared-value reassignment or `withSpring`/`withTiming` call — not `Animated.sequence` or a non-retargeting keyframe chain that restarts from zero.
 
@@ -38,7 +38,7 @@ Every animation in the diff is measured against these. A violation is a finding.
 
 8. **Accessibility.** `useReducedMotion()` is honored (gentler, not zero — drop the transform-based movement, keep opacity/color transitions that aid comprehension). There is no hover concept on a touchscreen, so the web's hover-gating clause doesn't apply on RN mobile; it only becomes relevant again on RN-web or tvOS focus states, where a real pointer or D-pad is back in play.
 
-9. **Asymmetric enter/exit.** Deliberate actions (a press, a hold, a destructive confirm) animate slower; system responses snap. Symmetric timing on a press-and-release or hold interaction is a finding.
+9. **Asymmetric enter/exit.** For deliberate, held actions — hold-to-confirm, a destructive confirm, a deliberate drag — the press/hold phase animates slower and the release/response snaps. This does not apply to a quick symmetric button-press scale (in and out at the same duration is correct there); symmetric timing is a finding only on hold/deliberate/destructive interactions.
 
 10. **Cohesion.** Motion matches the component's personality and the rest of the app — playful can be bouncier, a dashboard stays crisp. Mismatched personality, or a jarring cut where a Layout Animation transition would bridge two states, is a finding. When unsure whether motion feels right, the strongest move is often to delete it.
 
