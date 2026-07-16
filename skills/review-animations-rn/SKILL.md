@@ -24,7 +24,7 @@ Every animation in the diff is measured against these. A violation is a finding.
 
 1. **Justified motion.** Every animation must answer "why does this animate?" — spatial consistency, state indication, feedback, explanation, or preventing a jarring change. "It looks cool" on a frequently-seen element is a block.
 
-2. **Frequency-appropriate.** Match motion to how often it's seen. Any action repeated dozens or hundreds of times a day — a tab switch, a list-row press, a keyboard-adjacent toggle — gets **no** animation or the barest feedback. Tens/day gets reduced motion. Occasional gets standard. Rare/first-time can have delight.
+2. **Frequency-appropriate.** Match motion to how often it's seen. Any action repeated dozens or hundreds of times a day (a tab switch, a list-row press) gets **no** animation or the barest feedback. Tens/day gets reduced motion. Occasional gets standard. Rare/first-time can have delight.
 
 3. **Responsive easing.** Entering/exiting elements use the `easeOut` bezier (or a strong custom curve) from RN-STANDARDS.md, not a built-in Reanimated easing like `Easing.ease`. `Easing.in(...)` on UI is a block — it delays the moment the user watches most, exactly like web `ease-in`.
 
@@ -50,11 +50,12 @@ Flag these on sight, hard:
 - Animating `width`/`height`/`flex`/`top`/`left`/`margin`/`padding`
 - `Easing.in(...)` on any UI interaction; weak default easing (`Easing.ease`, `Easing.cubic`) on a deliberate animation
 - `transform: [{ scale: 0 }]` or a pure-fade entrance with no initial transform
-- Gesture-driven UI built on `Animated.sequence`/`Animated.timing` that can't retarget mid-gesture
+- `Animated.sequence`/fixed keyframe chains driving gesture-driven or rapidly-retriggered motion — a fixed step chain can't retarget mid-gesture
+- A duration-based tween (`Animated.timing`/`withTiming`) closing out a gesture dismissal — it retargets position but restarts its easing curve and drops the gesture's velocity; use a velocity-carrying spring (`withSpring({ velocity })`) instead
 - UI duration > 300ms with no stated reason
 - Missing `useReducedMotion` handling on movement
 - A `.value` read or write on the JS thread in a hot path (scroll handler, list render, gesture callback) that belongs in a worklet or `useDerivedValue`
-- Hardcoded pixel offsets where a screen-relative value or a `translateY` percentage-of-screen belongs
+- Hardcoded pixel offsets where a screen-relative value computed from `useWindowDimensions()`/`Dimensions` (a numeric px value, not a percentage-string transform — those can crash on Android) belongs
 - Everything-at-once list/grid entrance where a 30–80ms `FadeIn.delay(i * n)` stagger belongs
 
 ## Remedial Preference Hierarchy
