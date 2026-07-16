@@ -47,6 +47,8 @@ This is your shortcut to great interfaces. A shortcut to stand out in a sea of s
 - **[find-animation-opportunities](./skills/find-animation-opportunities/SKILL.md)** — Search your UI for places that would genuinely benefit from motion, while also telling you what not to animate.
 - **[animation-vocabulary](./skills/animation-vocabulary/SKILL.md)** — Get better animations from an AI by telling it exactly what you want by using the right words.
 - **[apple-design](./skills/apple-design/SKILL.md)** — Apple's principles for interface design and fluid motion, distilled from their WWDC design talks and translated for the web.
+- **[react-native-motion](./skills/react-native-motion/SKILL.md)** — The animation philosophy translated for React Native (Reanimated + Gesture Handler), with exact RN values in [RN-STANDARDS.md](./skills/react-native-motion/RN-STANDARDS.md).
+- **[review-animations-rn](./skills/review-animations-rn/SKILL.md)** — Review React Native animations against the same strict bar, in RN terms.
 
 ### Improve animations
 
