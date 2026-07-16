@@ -127,6 +127,20 @@ This section is what separates this skill from an animation wishlist.
 
 One short paragraph: how much motion this interface actually needs, whether it's already close to right, and which single suggestion has the highest leverage. Close by pointing at the handoff: `improve-animations plan <suggestion>` to turn any row into a self-contained implementation plan.
 
+## React Native
+
+The Gate (frequency → purpose → speed → function) is medium-agnostic; only *where to hunt* and *what to propose* change. Reanimated 3/4 + Gesture Handler; exact values in [review-animations/STANDARDS.md](../review-animations/STANDARDS.md).
+
+RN opportunity patterns to hunt for:
+
+- `Pressable`/`TouchableOpacity`/`TouchableWithoutFeedback` with no press feedback → propose a `useSharedValue` scale to `0.97` on `onPressIn` (`withTiming`, 120ms, easeOut).
+- List items / conditionally-rendered views that mount with no `entering=` → propose `entering={FadeIn.duration(200)}`, staggered `FadeIn.delay(i * 50)` where a group appears at once.
+- Lists that reorder/remove items with no `layout=` → propose `layout={LinearTransition}`.
+- Screen/route transitions using the default with no custom motion → propose a spring/timing transition where frequency allows.
+- Counters/timers without `fontVariant: ['tabular-nums']` → propose it (prevents digit-width jitter).
+
+Propose exact RN values, never `width`/`height` animation, and reject anything the Gate rejects (keyboard-frequent, purposeless, over-budget) exactly as on web.
+
 ## Tone
 
 When feel can't be judged from code alone, say so instead of guessing. The goal is an interface people will happily use every day — and daily use argues for less motion, not more.
