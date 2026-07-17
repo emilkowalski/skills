@@ -161,7 +161,7 @@ Slow where the user is deciding, fast where the system responds.
 - **Multi-touch protection**: ignore extra touch points after the drag begins (`if (isDragging) return`) — prevents jumps.
 - **Friction over hard stops** — allow over-drag with rising resistance rather than an invisible wall.
 
-**React Native:** Gesture Handler v2 `Gesture.Pan()`; velocity is **px/s** (web's ~0.11 px/ms ≈ ~110 px/s, tune per gesture). `.onEnd`: hand off via `withSpring(0, { velocity: e.velocityY })`; momentum via `withDecay({ velocity, clamp: [min, max] })`; rubber-band overshoot with a friction worklet. A single `Gesture.Pan()` captures the touch and ignores extra fingers by default (no manual pointer-capture / multi-touch guards).
+**React Native:** Gesture Handler v2 `Gesture.Pan()`; velocity is **px/s** (web's ~0.11 px/ms ≈ ~110 px/s, tune per gesture). `.onEnd`: hand off via `withSpring(0, { velocity: e.velocityY })`; momentum via `withDecay({ velocity, clamp: [min, max] })`; rubber-band overshoot with a friction worklet. A single `Gesture.Pan()` captures the touch for its lifetime, so no manual pointer-capture is needed; for the web rule's multi-touch guard, set `.maxPointers(1)` — otherwise `Pan` averages up to 10 pointers and a second finger jumps the tracked value.
 
 ## Masking imperfect crossfades
 

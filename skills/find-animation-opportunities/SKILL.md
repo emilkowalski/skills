@@ -127,7 +127,7 @@ This section is what separates this skill from an animation wishlist.
 
 One short paragraph: how much motion this interface actually needs, whether it's already close to right, and which single suggestion has the highest leverage. Close by pointing at the handoff: `improve-animations plan <suggestion>` to turn any row into a self-contained implementation plan.
 
-## React Native
+## React Native (Reanimated + Gesture Handler)
 
 The Gate (frequency → purpose → speed → function) is medium-agnostic; only *where to hunt* and *what to propose* change. Reanimated 3/4 + Gesture Handler; exact values in [review-animations/STANDARDS.md](../review-animations/STANDARDS.md).
 

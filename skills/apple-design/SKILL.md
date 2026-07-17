@@ -269,7 +269,7 @@ These principles are Apple's own; React Native maps them almost 1:1 via Reanimat
 - **Response / kill latency** → press feedback with `Pressable` + shared value (120ms `withTiming`); no `:active`.
 - **Direct manipulation (1:1 tracking)** → `Gesture.Pan().onUpdate(e => { sv.value = e.translationY })` inside a worklet — no per-frame JS bridge crossing.
 - **Interruptibility** → retarget the shared value; a `withSpring` keeps velocity when interrupted. Never `Animated.sequence`/keyframes.
-- **Behavior over animation (springs)** → `withSpring(t, { dampingRatio, duration })`; `dampingRatio: 1` no overshoot, `0.8` slight bounce. Apple `damping/response` → the mapping table in STANDARDS.
+- **Behavior over animation (springs)** → `withSpring(t, { dampingRatio, duration })`; `dampingRatio: 1` no overshoot, `0.8` slight bounce. Apple `damping/response` → the mapping in STANDARDS.
 - **Velocity handoff** → `.onEnd(e => sv.value = withSpring(target, { velocity: e.velocityY }))`.
 - **Momentum projection** → `withDecay({ velocity: e.velocityY, clamp: [min, max] })`.
 - **Rubber-banding** → friction worklet on overshoot before writing the shared value.

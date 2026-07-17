@@ -96,7 +96,7 @@ Finish by creating or updating `plans/README.md`: recommended execution order, d
 | `execute <plan>` | Dispatch an executor subagent to implement the plan in an isolated worktree, then review its diff with the `review-animations` bar and render a verdict |
 | `reconcile` | Re-check `plans/` against the current code: mark done plans DONE, refresh stale file:line references, retire fixed findings |
 
-## React Native
+## React Native (Reanimated + Gesture Handler)
 
 The audit *method* (recon → parallel audit → vet/prioritize → write plans) is unchanged. In an RN codebase, adjust what you grep for and what you flag. Detect RN by `react-native-reanimated` / `react-native-gesture-handler` imports, `useSharedValue`/`withTiming`/`withSpring`, or legacy `Animated` from `react-native`. Values and rules: [review-animations/STANDARDS.md](../review-animations/STANDARDS.md).
 
