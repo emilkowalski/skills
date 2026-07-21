@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY Backend Ops"
+  short_description: "FINDY 운영 데이터와 배포 경로를 안전하게 정비합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-backend-ops to implement or verify this FINDY backend operations change safely."

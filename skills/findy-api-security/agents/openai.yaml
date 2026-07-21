@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY API Security"
+  short_description: "FINDY 인증과 API 권한 경계를 안전하게 구현합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-api-security to secure this FINDY authentication or API flow without weakening existing contracts."

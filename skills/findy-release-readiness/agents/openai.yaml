@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY Release Readiness"
+  short_description: "FINDY 릴리스와 스토어 제출 차단 조건을 검증합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-release-readiness to verify this FINDY release without inventing missing production evidence."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY Repo Maintenance"
+  short_description: "FINDY 저장소 구조와 참조를 안전하게 정리합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-repo-maintenance to reorganize this FINDY repository without losing user changes or breaking references."

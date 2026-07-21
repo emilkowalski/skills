@@ -6,10 +6,30 @@
 
 ## 설치
 
-전체 스킬을 설치합니다.
+FINDY 전용 스킬만 Codex 사용자 환경에 설치합니다.
 
 ```bash
-npx skills@latest add rudals906377/skills
+npx skills@latest add rudals906377/skills \
+  --global --agent codex --yes \
+  --skill findy-flet-ui \
+  --skill findy-frontend-audit \
+  --skill findy-mobile-qa \
+  --skill findy-api-security \
+  --skill findy-backend-ops \
+  --skill findy-release-readiness \
+  --skill findy-repo-maintenance
+```
+
+설치 전 제공 목록만 확인하려면 다음 명령을 사용합니다.
+
+```bash
+npx skills@latest add rudals906377/skills --list
+```
+
+로컬 체크아웃을 검증하거나 아직 게시하지 않은 변경을 시험할 때는 저장소 경로를 source로 전달합니다.
+
+```bash
+npx skills@latest add /path/to/skills --list
 ```
 
 ## FINDY Codex 스킬
@@ -17,8 +37,12 @@ npx skills@latest add rudals906377/skills
 - **[findy-flet-ui](./skills/findy-flet-ui/SKILL.md)** — FINDY Flet UI 구현, 공통 컴포넌트 정리, 안전영역과 접근성 보정.
 - **[findy-frontend-audit](./skills/findy-frontend-audit/SKILL.md)** — 코드를 바꾸지 않고 공개 MVP 프론트 품질을 근거 중심으로 감사.
 - **[findy-mobile-qa](./skills/findy-mobile-qa/SKILL.md)** — 360x800·390x844, 키보드, 큰 글자, safe area와 고정 UI 회귀 검증.
+- **[findy-api-security](./skills/findy-api-security/SKILL.md)** — 인증 토큰, 소유권, OTP 공유 상태, 운영 fail-fast와 보안 회귀 검증.
+- **[findy-backend-ops](./skills/findy-backend-ops/SKILL.md)** — PostgreSQL·Redis·오브젝트 스토리지·관측성·마이그레이션 운영 경로 정비.
+- **[findy-release-readiness](./skills/findy-release-readiness/SKILL.md)** — 앱/서버/스토어 제출 계약과 외부 의존성 차단 상태 점검.
+- **[findy-repo-maintenance](./skills/findy-repo-maintenance/SKILL.md)** — 대규모 폴더 정리, 참조 갱신, 미사용 파일 보관과 안전 검증.
 
-역할을 구현, 감사, QA로 분리해 Codex가 분석 요청에서 임의 수정하거나 한 작업에서 범위를 과도하게 넓히지 않도록 했습니다.
+역할을 UI 구현, 감사, 모바일 QA, 보안, 운영, 릴리스, 저장소 정리로 분리해 Codex가 한 작업에서 범위를 과도하게 넓히지 않도록 했습니다.
 
 ## Upstream 스킬
 
@@ -36,8 +60,9 @@ Upstream 스킬은 주로 웹과 motion에 강합니다. FINDY 화면을 직접 
 
 ```bash
 for skill in skills/findy-*; do
-  python3 /Users/kyoungmin/.codex/skills/.system/skill-creator/scripts/quick_validate.py "$skill"
+  python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" "$skill"
 done
+python3 scripts/validate_findy_skills.py
 git diff --check
 ```
 

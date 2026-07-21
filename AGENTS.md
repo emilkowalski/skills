@@ -18,7 +18,8 @@
 Run for each changed skill:
 
 ```bash
-python3 /Users/kyoungmin/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/<skill-name>
+python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" skills/<skill-name>
+python3 scripts/validate_findy_skills.py
 git diff --check
 ```
 
