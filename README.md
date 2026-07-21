@@ -1,62 +1,48 @@
-<a href="https://animations.dev/">
-<img width="320" height="168" alt="opengraph-image-pwu6ef" src="https://github.com/user-attachments/assets/a405a37f-1a1a-4e8d-8fd6-269ee6d4fba6" />
-</a>
+# FINDY Codex Design Skills
 
-# Skills For Design Engineers
+이 저장소는 [Emil Kowalski의 design engineering skills](https://github.com/emilkowalski/skills)를 기반으로 하며, FINDY Flet 앱에서 Codex가 일관된 구현·감사·모바일 QA를 수행하도록 전용 스킬을 추가한 포크입니다.
 
-[![skills.sh](https://skills.sh/b/emilkowalski/skills)](https://skills.sh/emilkowalski/skills)
+원본 디자인·애니메이션 스킬의 저작권과 출처는 원저작자에게 있습니다. FINDY 전용 스킬은 원본을 수정하지 않고 별도 폴더로 관리합니다.
 
-For designers and engineers to help them build better user interfaces.
+## 설치
 
-Knowing whether you made a right choice when it comes to animations, or design in general, is hard. These skills aim to help you get to those right decisions faster.
-
-They are based on my years of experience working at companies like Vercel and Linear.
-
-All the skills here are a side-effect of domain-expertise. AI doesn’t replace such expertise, it amplifies what you can get out of it and makes you way better relative to others.
-
-So learn to code, design, or develop expertise in any other field. It’s extremely valuable.
-
-You can stay up to date with my skills here:
-
-[Sign Up To The Newsletter](https://animations.dev/skills)
-
-## Install
+전체 스킬을 설치합니다.
 
 ```bash
-npx skills@latest add emilkowalski/skills
+npx skills@latest add rudals906377/skills
 ```
 
-## Why use it?
+## FINDY Codex 스킬
 
-Agents don’t have great taste
+- **[findy-flet-ui](./skills/findy-flet-ui/SKILL.md)** — FINDY Flet UI 구현, 공통 컴포넌트 정리, 안전영역과 접근성 보정.
+- **[findy-frontend-audit](./skills/findy-frontend-audit/SKILL.md)** — 코드를 바꾸지 않고 공개 MVP 프론트 품질을 근거 중심으로 감사.
+- **[findy-mobile-qa](./skills/findy-mobile-qa/SKILL.md)** — 360x800·390x844, 키보드, 큰 글자, safe area와 고정 UI 회귀 검증.
 
-I have seen plenty of times that agents don’t pick the right ingredients for an animation. An `ease-in` easing for an enter animation when it’s supposed to be `ease-out` ([here’s why](https://emilkowal.ski/ui/7-practical-animation-tips#4.-choose-the-right-easing)). Or they choose a solid border instead of a semi-transparent shadow.
+역할을 구현, 감사, QA로 분리해 Codex가 분석 요청에서 임의 수정하거나 한 작업에서 범위를 과도하게 넓히지 않도록 했습니다.
 
-All these little things compound and make your interface either amazing, or just... not that great.
+## Upstream 스킬
 
-As explained in [Agents with Taste](https://emilkowal.ski/ui/agents-with-taste), these skills list all the little mistakes agents can potentially make and explain how to fix them.
+- **[emil-design-eng](./skills/emil-design-eng/SKILL.md)** — UI polish와 design engineering 원칙.
+- **[review-animations](./skills/review-animations/SKILL.md)** — motion 코드를 엄격한 기준으로 리뷰.
+- **[improve-animations](./skills/improve-animations/SKILL.md)** — 코드베이스 전체 애니메이션 감사와 실행 계획 작성.
+- **[find-animation-opportunities](./skills/find-animation-opportunities/SKILL.md)** — 필요한 motion 기회와 피해야 할 motion 탐색.
+- **[animation-vocabulary](./skills/animation-vocabulary/SKILL.md)** — 정확한 애니메이션 언어와 표현.
+- **[apple-design](./skills/apple-design/SKILL.md)** — Apple 인터페이스와 fluid motion 원칙.
+- **[pick-ui-library](./skills/pick-ui-library/SKILL.md)** — 검증된 웹 UI 라이브러리 선택 지원.
 
-This is your shortcut to great interfaces. A shortcut to stand out in a sea of slop.
+Upstream 스킬은 주로 웹과 motion에 강합니다. FINDY 화면을 직접 수정할 때는 Flet 구조와 제품 계약을 아는 `findy-flet-ui`를 우선 사용하고, motion의 세부 품질을 다듬을 때 upstream 스킬을 함께 사용합니다.
 
-## Reference
+## 검증
 
-- **[emil-design-eng](./skills/emil-design-eng/SKILL.md)** — The main skill that consists of mostly animation, but also some design advice.
-- **[review-animations](./skills/review-animations/SKILL.md)** — Review your animations in a strict way, based on my rules.
-- **[improve-animations](./skills/improve-animations/SKILL.md)** — Audit all the animations in your codebase and get prioritized, self-contained plans that any agent can execute.
-- **[find-animation-opportunities](./skills/find-animation-opportunities/SKILL.md)** — Search your UI for places that would genuinely benefit from motion, while also telling you what not to animate.
-- **[animation-vocabulary](./skills/animation-vocabulary/SKILL.md)** — Get better animations from an AI by telling it exactly what you want by using the right words.
-- **[apple-design](./skills/apple-design/SKILL.md)** — Apple's principles for interface design and fluid motion, distilled from their WWDC design talks and translated for the web.
-- **[pick-ui-library](./skills/pick-ui-library/SKILL.md)** — Have your agent pick the right library for the task based on libraries I use and trust, instead of letting AI hand-roll a toast component or install an abandoned package.
-
-### Improve animations
-
-Inspired by [shadcn/improve](https://github.com/shadcn/improve): use your most capable model to audit animations in your project and hand the execution to cheaper models.
-`improve-animations` surveys your whole codebase (not a single diff), audits it across eight categories (purpose & frequency, easing & duration, physicality, interruptibility, performance, accessibility, cohesion, missed opportunities), and presents a prioritized findings table. Pick the ones you want, and it writes self-contained plans into `plans/` — exact files, exact curves, exact durations, plus a feel check — that another agent can execute without any context or taste of its own. It never touches your source code itself.
-
+```bash
+for skill in skills/findy-*; do
+  python3 /Users/kyoungmin/.codex/skills/.system/skill-creator/scripts/quick_validate.py "$skill"
+done
+git diff --check
 ```
-> improve the animations in this codebase
-> improve-animations quick        # hotspots only
-> improve-animations performance  # one category
-> improve-animations plan add press feedback to all buttons
-> improve-animations execute plans/001-fix-dropdown-easing.md
-```
+
+## 출처와 라이선스
+
+- Upstream: [emilkowalski/skills](https://github.com/emilkowalski/skills)
+- Upstream design references: [animations.dev](https://animations.dev/)
+- License: [MIT](./LICENSE)

@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY Mobile QA"
+  short_description: "FINDY 모바일 화면과 상호작용 회귀를 검증합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-mobile-qa to verify FINDY on narrow mobile viewports and report regressions."

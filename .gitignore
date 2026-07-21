@@ -1,1 +1,32 @@
 .DS_Store
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Local data and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+
+# Generated files and dependencies
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+node_modules/
+dist/
+build/
+coverage/
+.coverage
+tmp/
+cache/

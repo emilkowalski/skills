@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY Flet UI"
+  short_description: "FINDY Flet 화면을 일관되게 구현하고 정리합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-flet-ui to implement this FINDY Flet interface consistently with the existing app."

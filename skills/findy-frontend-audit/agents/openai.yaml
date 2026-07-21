@@ -1,0 +1,5 @@
+interface:
+  display_name: "FINDY Frontend Audit"
+  short_description: "FINDY 프론트 출시 품질을 근거 중심으로 점검합니다"
+  brand_color: "#8B6B4F"
+  default_prompt: "Use $findy-frontend-audit to audit the FINDY frontend without changing code."
