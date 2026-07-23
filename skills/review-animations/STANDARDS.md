@@ -36,6 +36,14 @@ Built-in CSS easings are too weak. Use strong custom curves:
 
 Find curves at [easing.dev](https://easing.dev/) or [easings.co](https://easings.co/) — don't hand-roll from scratch.
 
+**React Native:** same beziers via `Easing.bezier(...)` used in `withTiming(v, { duration, easing })`. Built-in `Easing.ease`/`Easing.cubic` are as weak as their CSS equivalents — export the strong customs as constants:
+```ts
+export const easeOut    = Easing.bezier(0.23, 1, 0.32, 1);
+export const easeInOut  = Easing.bezier(0.77, 0, 0.175, 1);
+export const easeDrawer = Easing.bezier(0.32, 0.72, 0, 1);
+```
+Never `Easing.in(...)` on UI.
+
 ## Duration
 
 | Element | Duration |
@@ -48,6 +56,8 @@ Find curves at [easing.dev](https://easing.dev/) or [easings.co](https://easings
 
 **Rule: UI animations stay under 300ms.** A 180ms dropdown feels more responsive than a 400ms one. Faster spinners make load feel faster (same actual time). Instant tooltips after the first (skip delay + animation) make a toolbar feel faster.
 
+**React Native:** identical table and numbers, applied via `withTiming` `duration`. UI stays < 300ms; the UI thread gives no extra budget.
+
 ## Physicality
 
 - **Never `scale(0)`.** Start from `scale(0.9–0.97)` + `opacity: 0`. Nothing in the real world appears from nothing.
@@ -57,6 +67,8 @@ Find curves at [easing.dev](https://easing.dev/) or [easings.co](https://easings
   ```
   **Modals are exempt** — they appear centered in the viewport, keep `transform-origin: center`.
 - **Button press feedback.** `transform: scale(0.97)` on `:active`, `transition: transform 160ms ease-out`. Subtle (0.95–0.98). Applies to any pressable element.
+
+**React Native:** press state via `Pressable` `onPressIn`/`onPressOut` writing a shared value (`withTiming(0.97, { duration: 120, easing: easeOut })` → `withTiming(1, ...)`), applied through `useAnimatedStyle` transform scale. `scale` scales children like CSS. Never `scale(0)`; start `0.95` + opacity.
 
 ## Springs
 
@@ -73,6 +85,8 @@ Feel natural because they simulate physics; no fixed duration — they settle on
 Keep bounce subtle (0.1–0.3); avoid bounce in most UI — reserve for drag-to-dismiss and playful interactions. Springs maintain velocity when interrupted (keyframes restart from zero), so they're ideal for gestures users may reverse mid-motion.
 
 Mouse interactions: interpolate with `useSpring` rather than tying value directly to mouse position (direct = artificial, no momentum). Only do this when the motion is decorative.
+
+**React Native:** `withSpring(t, { dampingRatio: 1, duration: 400 })` (critically damped, no overshoot) / `dampingRatio: 0.8` (slight bounce); physics form `{ mass, stiffness, damping }` for finer control. Apple mapping: `1.0 / 0.3–0.4` → `dampingRatio: 1, duration: 300–400`; `~0.8` bounce → `dampingRatio: 0.8`. Reserve `dampingRatio < 1` for drag/gesture handoff, not fade-ins or modals.
 
 ## Interruptibility
 
@@ -127,12 +141,16 @@ Slow where the user is deciding, fast where the system responds.
     { duration: 1000, fill: 'forwards', easing: 'cubic-bezier(0.77, 0, 0.175, 1)' });
   ```
 
+**React Native:** Reanimated worklets run on the UI thread by construction (no flag). Legacy `Animated` requires `useNativeDriver: true` and then supports **only** `transform`/`opacity`; `width`/`height`/`margin`/`padding`/`top`/`left` force a JS-thread layout pass, and `backgroundColor` falls back to JS on the legacy driver (interpolate color in a Reanimated worklet instead). Never read/write `.value` on the JS thread in a hot path — keep math in `useAnimatedStyle`/`useDerivedValue`/gesture worklets.
+
 ## Transforms & clip-path
 
 - **`translate` percentages** are relative to the element's own size — `translateY(100%)` moves by the element's height regardless of dimensions (how Sonner/Vaul position toasts/drawers). Prefer over hardcoded px.
 - **`scale()` scales children too** (font, icons, content) — a feature for press feedback.
 - **3D**: `rotateX/Y` + `transform-style: preserve-3d` for depth/orbit/flip without JS.
 - **`clip-path: inset(t r b l)`** is a powerful animation tool: each value eats in from that side. Uses: reveal-on-scroll (`inset(0 0 100% 0)` → `inset(0 0 0 0)`), hold-to-delete overlay, seamless tab color transitions (duplicate + clip the active copy), comparison sliders.
+
+**React Native:** no `clip-path`. Reveal via `overflow: 'hidden'` + an overlay animating `scaleX`/`scaleY` from an edge (cheapest, pure transform); `@react-native-masked-view/masked-view` for soft/gradient masks; `@shopify/react-native-skia` for arbitrary GPU-clipped shapes. Never animate a wrapper's `width` to reveal — that forces a JS-thread layout pass.
 
 ## Gestures & drag
 
@@ -141,6 +159,8 @@ Slow where the user is deciding, fast where the system responds.
 - **Pointer capture** once dragging starts, so it continues when the pointer leaves bounds.
 - **Multi-touch protection**: ignore extra touch points after the drag begins (`if (isDragging) return`) — prevents jumps.
 - **Friction over hard stops** — allow over-drag with rising resistance rather than an invisible wall.
+
+**React Native:** Gesture Handler v2 `Gesture.Pan()`; velocity is **px/s** (web's ~0.11 px/ms ≈ ~110 px/s, tune per gesture). `.onEnd`: hand off via `withSpring(0, { velocity: e.velocityY })`; momentum via `withDecay({ velocity, clamp: [min, max] })`; rubber-band overshoot with a friction worklet. A single `Gesture.Pan()` captures the touch for its lifetime, so no manual pointer-capture is needed; for the web rule's multi-touch guard, set `.maxPointers(1)` — otherwise `Pan` averages up to 10 pointers and a second finger jumps the tracked value.
 
 ## Masking imperfect crossfades
 
@@ -174,6 +194,8 @@ const closedX = reduce ? 0 : '-100%';
 ```
 
 Reduced motion means fewer and gentler animations, not zero — keep transitions that aid comprehension, remove movement/position changes.
+
+**React Native:** `useReducedMotion()` (Reanimated) or `AccessibilityInfo.isReduceMotionEnabled()` for imperative checks; gentler, not zero (drop translate, keep opacity). Hover-gating (`@media (hover)`) has no mobile analogue — skip it except on RN-web / tvOS focus.
 
 ## Debugging (recommend in reviews when feel is uncertain)
 

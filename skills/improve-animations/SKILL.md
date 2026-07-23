@@ -96,6 +96,12 @@ Finish by creating or updating `plans/README.md`: recommended execution order, d
 | `execute <plan>` | Dispatch an executor subagent to implement the plan in an isolated worktree, then review its diff with the `review-animations` bar and render a verdict |
 | `reconcile` | Re-check `plans/` against the current code: mark done plans DONE, refresh stale file:line references, retire fixed findings |
 
+## React Native (Reanimated + Gesture Handler)
+
+The audit *method* (recon → parallel audit → vet/prioritize → write plans) is unchanged. In an RN codebase, adjust what you grep for and what you flag. Detect RN by `react-native-reanimated` / `react-native-gesture-handler` imports, `useSharedValue`/`withTiming`/`withSpring`, or legacy `Animated` from `react-native`. Values and rules: [review-animations/STANDARDS.md](../review-animations/STANDARDS.md).
+
+Flag in RN specifically: legacy `Animated` without `useNativeDriver: true`; animation of layout props (`width`/`height`/`flex`/`top`/`left`) instead of `transform`; non-interruptible `Animated.sequence`/keyframes on gesture or rapidly-retriggered UI; missing `useReducedMotion()`; `.value` reads on the JS thread in hot paths; `scale(0)` entrances; `Easing.in(...)` on UI. Emit plans that produce Reanimated code.
+
 ## Tone
 
 State findings plainly with evidence. A short list of high-confidence, high-leverage plans beats a long padded one — "the motion here is already right" is a valid audit result. Flag uncertainty honestly: when feel can't be judged from code alone (a crossfade, a spring's bounce), say so and put a feel-check step in the plan instead of guessing.

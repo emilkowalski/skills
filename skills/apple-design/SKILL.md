@@ -262,6 +262,23 @@ Tactical rules that serve these:
 - **Design interaction and visuals together.** "You shouldn't be able to tell where one ends and the other begins." Motion is not a layer added after the pixels.
 - **Test with real people in real context**, and review motion with fresh eyes — play it in slow motion / frame-by-frame to catch what's invisible at full speed.
 
+## React Native (Reanimated + Gesture Handler)
+
+These principles are Apple's own; React Native maps them almost 1:1 via Reanimated 3/4 + `react-native-gesture-handler`. Exact values: [review-animations/STANDARDS.md](../review-animations/STANDARDS.md).
+
+- **Response / kill latency** → press feedback with `Pressable` + shared value (120ms `withTiming`); no `:active`.
+- **Direct manipulation (1:1 tracking)** → `Gesture.Pan().onUpdate(e => { sv.value = e.translationY })` inside a worklet — no per-frame JS bridge crossing.
+- **Interruptibility** → retarget the shared value; a `withSpring` keeps velocity when interrupted. Never `Animated.sequence`/keyframes.
+- **Behavior over animation (springs)** → `withSpring(t, { dampingRatio, duration })`; `dampingRatio: 1` no overshoot, `0.8` slight bounce. Apple `damping/response` → the mapping in STANDARDS.
+- **Velocity handoff** → `.onEnd(e => sv.value = withSpring(target, { velocity: e.velocityY }))`.
+- **Momentum projection** → `withDecay({ velocity: e.velocityY, clamp: [min, max] })`.
+- **Rubber-banding** → friction worklet on overshoot before writing the shared value.
+- **Frame-level smoothness** → keep animation in worklets (UI thread); avoid layout-prop animation and JS-thread `.value` reads.
+- **Materials & depth** → `expo-blur` `<BlurView>` / `@react-native-community/blur` (weaker on Android — test on-device).
+- **Multimodal feedback** → `expo-haptics` fired on the *same frame* as the visual (e.g. at the snap inside `.onEnd`).
+- **Reduced motion** → `useReducedMotion()`; gentler, not zero.
+- **Typography** → `fontVariant: ['tabular-nums']` for ticking numbers; RN exposes `letterSpacing`/`lineHeight` for tracking/leading.
+
 ## Quick Reference
 
 | Need | Technique | Concrete value |

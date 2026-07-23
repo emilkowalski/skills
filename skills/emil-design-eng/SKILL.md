@@ -655,6 +655,25 @@ Step through animations frame by frame in Chrome DevTools (Animations panel). Th
 
 For touch interactions (drawers, swipe gestures), test on physical devices. Connect your phone via USB, visit your local dev server by IP address, and use Safari's remote devtools. The Xcode Simulator is an alternative but real hardware is better for gesture testing.
 
+## React Native (Reanimated + Gesture Handler)
+
+The Animation Decision Framework, spring guidance, and component principles above are medium-agnostic — the *decisions* are identical in React Native; only the *implementation* changes. Reach for Reanimated 3/4 + `react-native-gesture-handler`. For exact RN values, see [review-animations/STANDARDS.md](../review-animations/STANDARDS.md) (RN notes per section).
+
+Component principles → RN:
+
+- **Buttons must feel responsive** → `Pressable` + `useSharedValue`; `onPressIn` → `withTiming(0.97, { duration: 120, easing: easeOut })`, `onPressOut` → back to `1`, via `useAnimatedStyle`. There is no `:active`.
+- **Never animate from scale(0)** → same rule; start `0.95` + `opacity: 0`.
+- **Make popovers origin-aware** → RN 0.74+ `transformOrigin`, else translate→scale→translate; modals stay centered.
+- **Interruptible UI (CSS transitions over keyframes)** → retarget a shared value with `withTiming`/`withSpring`; never `Animated.sequence`/keyframes that restart from zero. A spring keeps velocity when interrupted.
+- **Enter states (`@starting-style`)** → RN's native strength: `entering={FadeIn}` / `exiting={FadeOut}` / `layout={LinearTransition}` animate mount/unmount/reflow with no `useEffect` + `mounted` flag. Stagger with `FadeIn.delay(i * 50)` (same 30–80ms window).
+- **clip-path reveals** → `overflow: 'hidden'` + overlay `scaleX`, masked-view, or Skia (never animate `width`).
+
+Performance rule (**Only animate transform and opacity**) → **native-driver-safe**: Reanimated worklets run on the UI thread; legacy `Animated` needs `useNativeDriver: true` (transform/opacity only). Never animate layout props or read `.value` on the JS thread in a hot path.
+
+Gestures & drag → Gesture Handler v2 `Gesture.Pan()`: momentum dismissal via velocity threshold (px/s), `withSpring(0, { velocity })` handoff, `withDecay` momentum, friction-worklet rubber-banding. See [apple-design](../apple-design/SKILL.md) for the gesture-feel checklist.
+
+Accessibility (`prefers-reduced-motion`) → `useReducedMotion()`; gentler, not zero. Touch-device hover states → N/A on mobile.
+
 ## Review Checklist
 
 When reviewing UI code, check for:
