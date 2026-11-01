@@ -72,12 +72,12 @@ Hunt for: `@keyframes` on toasts/toggles/rapidly-triggered UI, gesture handlers 
 
 - **Animate `transform` and `opacity` only.** `width`/`height`/`margin`/`padding`/`top`/`left` trigger layout + paint + composite.
 - **`transition: all`** animates unintended properties off-GPU — always a finding.
-- **Framer Motion `x`/`y`/`scale` shorthands are not hardware-accelerated** — they run on the main thread and drop frames under load. Target: the full transform string, `animate={{ transform: "translateX(100px)" }}`.
+- **Motion `x`/`y`/`scale` shorthands before `motion` 14.2 are not hardware-accelerated** — they run on the main thread and drop frames under load. Target: upgrade to `motion` 14.2+, where they are accelerated on HTML elements; on older versions, the full transform string, `animate={{ transform: "translateX(100px)" }}`. Layout animations (`layout`, `layoutId`) still run on the main thread in every version.
 - **Don't drive child transforms via a CSS variable on the parent** — it recalcs styles for all children. Set `transform` directly on the element.
 - CSS (and WAAPI) beat rAF-based JS under load — use CSS for predetermined motion, JS/springs for dynamic and gesture-driven motion.
 - Keep transition-time `filter: blur()` under 20px — heavy blur is expensive, especially in Safari.
 
-Hunt for: `transition: all`, animated layout properties, Framer Motion shorthand props on busy pages, `setProperty('--x', …)` driving child transforms, rAF loops doing what CSS could.
+Hunt for: `transition: all`, animated layout properties, Motion shorthand props on busy pages (on versions before 14.2), layout animations on busy pages, `setProperty('--x', …)` driving child transforms, rAF loops doing what CSS could.
 
 ## 6. Accessibility
 
