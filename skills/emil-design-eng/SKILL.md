@@ -494,7 +494,7 @@ element.style.transform = `translateY(${distance}px)`;
 
 ### Motion hardware acceleration caveat
 
-From `motion` 14.2, Motion's shorthand properties (`x`, `y`, `scale`, `rotate`) are hardware-accelerated on HTML elements. Before 14.2 they use `requestAnimationFrame` on the main thread, so on those versions use the full `transform` string for hardware acceleration (`framer-motion` shares Motion's version numbers, so the same cut-off applies):
+From `motion` 14.2, Motion's shorthand properties (`x`, `y`, `scale`, `rotate`) are hardware-accelerated on HTML elements. Before 14.2 they use `requestAnimationFrame` on the main thread, so on those versions use the full `transform` string for hardware acceleration:
 
 ```jsx
 // motion 14.2+: hardware accelerated. Before 14.2: main thread, drops frames under load
