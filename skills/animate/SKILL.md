@@ -86,7 +86,7 @@ If the task needs a *component* rather than an animation — a toast, a drawer, 
 - **Never `scale(0)`.** Start from `scale(0.9–0.97)` + `opacity: 0`. Nothing in the real world appears from nothing.
 - **`transform-origin` at the trigger** for popovers, dropdowns, menus, tooltips — `var(--transform-origin)` in Base UI. **Modals are exempt**; they're not anchored to a trigger, so they stay centered.
 - **Percentages in `translate()`** are relative to the element's own size — `translateY(100%)` moves by its own height whatever the content. Prefer over hardcoded pixels.
-- **In Motion, check the version before you pick a transform syntax.** From `motion` 14.2, the `x`/`y`/`scale`/`rotate` shorthands are hardware-accelerated on HTML elements, so use them. Before 14.2 they run on the main thread and drop frames under load, so use the full transform string:
+- **In Motion, newest versions hardware accelerate independent transforms like `x`/`y`/`scale`/`rotate`.**
 
 ```jsx
 <motion.div animate={{ x: 100 }} />                          // motion 14.2+: hardware accelerated
