@@ -1,4 +1,3 @@
-
 <a href="http://aiforui.dev/">
 <img width="360" height="202" alt="opengraph-image 2" src="https://github.com/user-attachments/assets/84fca9a6-0b2b-4927-8f48-f3ce194a5c47" />
 </a>
@@ -48,6 +47,7 @@ This is your shortcut to great interfaces. A shortcut to stand out in a sea of s
 - **[improve-animations](./skills/improve-animations/SKILL.md)** — Audit all the animations in your codebase and get prioritized, self-contained plans that any agent can execute.
 - **[find-animation-opportunities](./skills/find-animation-opportunities/SKILL.md)** — Search your UI for places that would genuinely benefit from motion, while also telling you what not to animate.
 - **[remove-animations](./skills/remove-animations/SKILL.md)** — The opposite of finding opportunities: remove the animations your app doesn't need, think of motion on keyboard shortcuts, fade-ins on every section, and delay on every tooltip in a group.
+- **[choreograph](./skills/choreograph/SKILL.md)** — Coordinate several elements that animate together: what leads, what follows, what runs in parallel, and what shouldn't move at all.
 - **[animation-performance](./skills/animation-performance/SKILL.md)** — Fix animations that drop frames. It includes lots of subtle issues that most agents miss.
 - **[animation-vocabulary](./skills/animation-vocabulary/SKILL.md)** — Get better animations from an AI by telling it exactly what you want by using the right words.
 - **[apple-design](./skills/apple-design/SKILL.md)** — Apple’s principles for interface design and fluid motion, distilled from their WWDC design talks and translated for the web.
