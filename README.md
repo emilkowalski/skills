@@ -51,6 +51,7 @@ This is your shortcut to great interfaces. A shortcut to stand out in a sea of s
 - **[animation-performance](./skills/animation-performance/SKILL.md)** — Fix animations that drop frames. It includes lots of subtle issues that most agents miss.
 - **[animation-vocabulary](./skills/animation-vocabulary/SKILL.md)** — Get better animations from an AI by telling it exactly what you want by using the right words.
 - **[apple-design](./skills/apple-design/SKILL.md)** — Apple’s principles for interface design and fluid motion, distilled from their WWDC design talks and translated for the web.
+- **[gestures](./skills/gestures/SKILL.md)** — Build drag, swipe, and sheet interactions that track the finger 1:1, carry the speed of the release, and can be caught mid-animation.
 - **[write-swift](./skills/write-swift/SKILL.md)** — Write modern Swift. Includes: value types, Swift 6 concurrency, generics, performance, and Swift Testing.
 - **[pick-ui-library](./skills/pick-ui-library/SKILL.md)** — Have your agent pick the right library for the task based on libraries I use and trust, instead of letting AI hand-roll a toast component or install an abandoned package.
 - **[prototype](./skills/prototype/SKILL.md)** — Build multiple different versions of a UI piece you describe and go through them using a switcher.
