@@ -99,8 +99,8 @@ Run through this for every gesture you ship:
 
 ## Reduced motion
 
-Tracking is direct manipulation — the user is producing the motion — so it stays. What reduces: momentum flings, bounce, and any decorative motion around the gesture. On release under `prefers-reduced-motion`, settle with a short opacity/position change instead of a bouncy spring. See the `animation-accessibility` skill for the full two-variant workflow.
+Tracking is direct manipulation — the user is producing the motion — so it stays. What reduces: momentum flings, bounce, and any decorative motion around the gesture. On release under `prefers-reduced-motion`, settle with a short opacity/position change instead of a bouncy spring.
 
 ## When it still feels wrong
 
-A "weird" spring is usually fixed by increasing `damping`. A gesture that stutters is a performance problem — check the track-phase rules above first, then use the `animation-performance` skill. To diagnose a feeling you can't name, use the `debug-animation` skill: record the gesture and scrub it frame by frame.
+A "weird" spring is usually fixed by increasing `damping`. A gesture that stutters is a performance problem — check the track-phase rules above first, then use the `animation-performance` skill. To diagnose a feeling you can't name, record the gesture and scrub it frame by frame.
