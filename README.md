@@ -18,7 +18,7 @@ So learn to code, design, or develop expertise in any other field. It’s extrem
 
 You can stay up to date with my skills here:
 
-[Sign Up To The Newsletter](https://aiforui.dev/skills)
+[Sign Up To The Newsletter](https://aiforui.dev/skills/updates)
 
 ## Install
 
