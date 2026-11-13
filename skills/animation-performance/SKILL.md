@@ -43,7 +43,7 @@ Start here. Match what the user is seeing, then read the matching section.
 | Problem | Solution |
 | --- | --- |
 | Animation stutters | Animate `transform`/`opacity`, not `width`/`height`/`top`/`margin` |
-| Shadow animation is choppy | `filter: drop-shadow()` |
+| Shadow animation is choppy | `filter: drop-shadow()` (composited in Chrome; measure elsewhere) |
 | Jank only during navigation or loading | Move the animation to CSS or WAAPI so it runs off the main thread |
 | Motion `x`/`y` drops frames | Upgrade to `motion` 14.2+, or animate the full `transform` string |
 | Hand-rolled animation drops frames in React | Write to `ref.current.style`, not state |
@@ -88,7 +88,7 @@ Every property enters this pipeline at one of three points, and the cost differs
 | `width` / `height` / `padding` to grow or shrink | `scale()` |
 | `top` / `left` / `margin` to move | `translate()` (percentages are relative to the element's own size) |
 | `display` / `visibility` swaps | `opacity`, then `visibility: hidden` once it ends so it stops taking clicks |
-| `box-shadow` | `filter: drop-shadow(…)` |
+| `box-shadow` | `filter: drop-shadow(…)` (Chrome composites `filter`; other engines may repaint, so measure) |
 
 The last one is the one people miss. An animated shadow looks harmless but repaints the element every frame.
 

@@ -132,7 +132,7 @@ Is the element entering or exiting?
 | Modals, drawers          | 200-500ms     |
 | Marketing/explanatory    | Can be longer |
 
-**Rule: UI animations stay under 300ms. Drawers, sheets, and toasts are the documented exceptions** (drawers up to 500ms; toasts use Sonner's 400ms `ease`, see Cohesion). A 180ms dropdown feels more responsive than a 400ms one. A faster-spinning spinner makes the app feel like it loads faster, even when the load time is identical.
+**Rule: UI animations stay under 300ms. Modals, modals, drawers, sheets, and toasts are the documented exceptions** (modals and drawers up to 500ms; toasts use Sonner's 400ms `ease`, see Cohesion). A 180ms dropdown feels more responsive than a 400ms one. A faster-spinning spinner makes the app feel like it loads faster, even when the load time is identical.
 
 ### Perceived performance
 
@@ -628,10 +628,10 @@ When multiple elements enter together, stagger their appearance. Each element an
   animation-delay: 50ms;
 }
 .item:nth-child(3) {
-  animation-delay: 100ms;
+  animation-delay: 90ms;
 }
 .item:nth-child(4) {
-  animation-delay: 150ms;
+  animation-delay: 120ms;
 }
 
 @keyframes fadeIn {
@@ -676,7 +676,7 @@ When reviewing UI code, check for:
 | `ease-in` on UI element                    | Switch to `ease-out` or custom curve                             |
 | `transform-origin: center` on popover      | Set to trigger location or use Base UI's `var(--transform-origin)` (modals are exempt — keep centered) |
 | Animation on keyboard action               | Remove animation entirely                                        |
-| Duration > 300ms on UI element (not a drawer, sheet, or toast) | Reduce to 150-250ms                              |
+| Duration > 300ms on UI element (not a modal, drawer, sheet, or toast) | Reduce to 150-250ms                              |
 | Hover animation without media query        | Add `@media (hover: hover) and (pointer: fine)`                  |
 | Keyframes on rapidly-triggered element     | Use CSS transitions for interruptibility                         |
 | Motion `x`/`y` props under load (pre-14.2) | Upgrade to 14.2+, or use `transform: "translateX()"`             |

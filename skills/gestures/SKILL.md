@@ -71,7 +71,7 @@ const y = useMotionValue(0);
 />
 ```
 
-`dragMomentum` is on by default — right for a flung card, wrong for a simple reposition; disable it when the element should stop where the finger stops. `dragConstraints` takes a ref or bounds object.
+`dragMomentum` is on by default — right for a flung card, wrong for a simple reposition; disable it when the element should stop where the finger stops. The example above disables it because `onDragEnd` hands the release to its own spring. `dragConstraints` takes a ref or bounds object.
 
 ## Sheets without springs: the Vaul curve
 

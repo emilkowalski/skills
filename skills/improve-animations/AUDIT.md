@@ -33,7 +33,7 @@ Decision order for easing:
 --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);     /* iOS-like drawer curve */
 ```
 
-Duration budgets — **UI animations stay under 300ms. Drawers, sheets, and toasts are the documented exceptions** (drawers up to 500ms; Sonner-style toasts use 400ms `ease`):
+Duration budgets — **UI animations stay under 300ms. Modals, modals, drawers, sheets, and toasts are the documented exceptions** (modals and drawers up to 500ms; Sonner-style toasts use 400ms `ease`):
 
 | Element | Duration |
 | --- | --- |
@@ -43,7 +43,7 @@ Duration budgets — **UI animations stay under 300ms. Drawers, sheets, and toas
 | Modals, drawers | 200–500ms |
 | Marketing / explanatory | Can be longer |
 
-Hunt for: `ease-in` anywhere, bare `ease`/`linear` on entrances (Sonner-style toasts excepted), durations > 300ms on UI elements other than drawers, sheets, and toasts, tooltip delay + animation on every tooltip in a toolbar (after the first, they should be instant).
+Hunt for: `ease-in` anywhere, bare `ease`/`linear` on entrances (Sonner-style toasts excepted), durations > 300ms on UI elements other than modals, drawers, sheets, and toasts, tooltip delay + animation on every tooltip in a toolbar (after the first, they should be instant).
 
 ## 3. Physicality & origin
 

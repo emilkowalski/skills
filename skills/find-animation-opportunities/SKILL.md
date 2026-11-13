@@ -58,7 +58,7 @@ The answer must be one of these, named explicitly:
 
 ### 3. Speed — can it stay inside budget?
 
-The suggestion must work within the standard budgets (UI under 300ms; drawers, sheets, and toasts are the documented exceptions):
+The suggestion must work within the standard budgets (UI under 300ms; modals, drawers, sheets, and toasts are the documented exceptions):
 
 | Element | Duration |
 | --- | --- |

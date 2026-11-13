@@ -46,7 +46,7 @@ Find curves at [easing.dev](https://easing.dev/) or [easings.co](https://easings
 | Modals, drawers | 200–500ms |
 | Marketing / explanatory | Can be longer |
 
-**Rule: UI animations stay under 300ms. Drawers, sheets, and toasts are the documented exceptions** (drawers up to 500ms; toasts use Sonner's 400ms `ease`, see Cohesion). A 180ms dropdown feels more responsive than a 400ms one. Faster spinners make load feel faster (same actual time). Instant tooltips after the first (skip delay + animation) make a toolbar feel faster.
+**Rule: UI animations stay under 300ms. Modals, modals, drawers, sheets, and toasts are the documented exceptions** (modals and drawers up to 500ms; toasts use Sonner's 400ms `ease`, see Cohesion). A 180ms dropdown feels more responsive than a 400ms one. Faster spinners make load feel faster (same actual time). Instant tooltips after the first (skip delay + animation) make a toolbar feel faster.
 
 ## Physicality
 
@@ -153,7 +153,7 @@ Stagger group entrances; 30–80ms between items. Longer delays feel slow. Stagg
 ```css
 .item { opacity: 0; transform: translateY(8px); animation: fadeIn 300ms var(--ease-out) forwards; }
 .item:nth-child(2) { animation-delay: 50ms; }
-.item:nth-child(3) { animation-delay: 100ms; }
+.item:nth-child(3) { animation-delay: 90ms; }
 @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 ```
 

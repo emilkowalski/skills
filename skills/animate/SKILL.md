@@ -129,7 +129,7 @@ Need a curve that isn't here? Take it from [easing.dev](https://easing.dev/) or 
 | Modals, drawers | 200–500ms |
 | Marketing / explanatory | Can be longer |
 
-**UI animations stay under 300ms. Drawers, sheets, and toasts are the documented exceptions.** A 180ms dropdown feels more responsive than a 400ms one.
+**UI animations stay under 300ms. Modals, modals, drawers, sheets, and toasts are the documented exceptions.** A 180ms dropdown feels more responsive than a 400ms one.
 
 **Reach for a spring instead** when the motion is drag with momentum, an element that should feel alive, a gesture the user can interrupt or reverse, or decorative mouse-tracking:
 

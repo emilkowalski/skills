@@ -52,7 +52,7 @@ Can you name its purpose — feedback, spatial consistency, state indication, pr
 │        └── No → DELETE.
 └── Yes → Is it seen tens of times a day (hover, frequent toggles, list expansion)?
           ├── Yes → REDUCE to the near-imperceptible version (see "Reducing").
-          └── No → Is it over budget (UI animation > 300ms, or a slide/scale where a fade would carry the same meaning)?
+          └── No → Is it over budget (UI animation > 300ms outside the modal, drawer, sheet, and toast exceptions, or a slide/scale where a fade would carry the same meaning)?
                    ├── Yes → REDUCE.
                    └── No → KEEP.
 ```
@@ -67,7 +67,7 @@ Reduce means a smaller version of the same motion, never a different animation:
 | --- | --- |
 | Hover with scale, lift, or shadow growth | Color/opacity change only, ≤150ms, existing curve |
 | Slide or scale entrance on a frequent surface | Opacity only, 150ms, existing curve |
-| UI animation over 300ms | 200–250ms, same curve |
+| UI animation over 300ms (not a modal, drawer, sheet, or toast) | 200–250ms, same curve |
 | Stagger over 80ms per item, or over 300ms total | Cap at 30ms per item, or drop the stagger and fade the group as one |
 | Infinite loop (pulse, shimmer, glow) on a persistent element | Run once, or remove the loop and keep the static end state |
 

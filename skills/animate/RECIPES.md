@@ -179,8 +179,8 @@ For a list or grid the user sees occasionally — not for a list they scroll pas
 }
 
 .item:nth-child(2) { animation-delay: 50ms; }
-.item:nth-child(3) { animation-delay: 100ms; }
-.item:nth-child(4) { animation-delay: 150ms; }
+.item:nth-child(3) { animation-delay: 90ms; }
+.item:nth-child(4) { animation-delay: 120ms; }
 
 @keyframes fadeIn {
   to {
