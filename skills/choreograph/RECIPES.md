@@ -2,24 +2,23 @@
 
 Copy-ready patterns for the relationships in [SKILL.md](SKILL.md). The values are starting points, so tune them on a recording.
 
-## Overlap: CSS stagger with an index variable
+## Overlap: CSS stagger with a delay variable
 
-For one-shot entrances (a hero, a personal site intro). The delay is computed per element from a custom property, so you don't need one class per item.
+For one-shot entrances (a hero, a personal site intro). Each element carries its own delay in a custom property, so you don't need one class per item. The gaps shrink as the group goes on (120ms, then 80ms), so it reads as a wave, not a metronome.
 
 ```tsx
 <div className="stagger">
-  <h1 style={{ "--i": 0 }}>Title</h1>
-  <p style={{ "--i": 0 }}>First paragraph, same beat as the title</p>
-  <p style={{ "--i": 1 }}>Supporting paragraph</p>
-  <div style={{ "--i": 2 }}>CTAs</div>
+  <h1 style={{ "--delay": "0ms" }}>Title</h1>
+  <p style={{ "--delay": "0ms" }}>First paragraph, same beat as the title</p>
+  <p style={{ "--delay": "120ms" }}>Supporting paragraph</p>
+  <div style={{ "--delay": "200ms" }}>CTAs</div>
 </div>
 ```
 
 ```css
 .stagger > * {
-  --step: 120ms;
   animation: enter 0.6s ease both;
-  animation-delay: calc(var(--step) * var(--i));
+  animation-delay: var(--delay, 0ms);
 }
 
 @keyframes enter {
@@ -85,7 +84,7 @@ const decoration = {
 - Each role gets its own variant (distance, duration). The stagger only sets *when* each one starts.
 - `stagger(0.05, { from: "center" })` radiates out from the middle. Use a number index to radiate from the item the user interacted with.
 - Older Motion versions use `staggerChildren: 0.06` instead of `delayChildren: stagger(...)`.
-- For long lists, give items beyond the first ~6 the same delay as the 6th, so the group never takes longer than ~300ms.
+- For long lists, give items beyond the first 5 the same delay as the 5th, so the group never takes longer than ~300ms.
 
 ## Together: remove the exiting element from the flow
 
@@ -145,7 +144,7 @@ const fadeDuration = useMemo(() => {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        transition={{ duration: fadeDuration, ease: [0.26, 0.08, 0.25, 1] }}
+        transition={{ duration: fadeDuration, ease: "easeOut" }}
       >
         {content}
       </motion.div>
@@ -200,7 +199,7 @@ For small containers or similar views, swap the 110% slide for a crossfade with 
 
 .checkmark {
   animation: draw 0.4s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
-  animation-delay: 0.6s; /* = the square's duration */
+  animation-delay: 0.5s; /* just before the square's 0.6s ends */
 }
 
 @keyframes draw {
@@ -208,7 +207,7 @@ For small containers or similar views, swap the 110% slide for a crossfade with 
 }
 ```
 
-With `pathLength="100"` on both paths, `stroke-dasharray: 100; stroke-dashoffset: 100` hides each one with round numbers. To make the handoff read as one gesture, start the checkmark slightly before the square finishes (e.g. 0.5s).
+With `pathLength="100"` on both paths, `stroke-dasharray: 100; stroke-dashoffset: 100` hides each one with round numbers. Starting the checkmark 0.1s before the square finishes makes the handoff read as one gesture.
 
 ## Sequence: morph between two rich states with a crossfade
 
@@ -242,7 +241,6 @@ Use this only when several elements coordinate across several events and you nee
 ```tsx
 const [scope, animate] = useAnimate();
 const running = useRef<ReturnType<typeof animate>[]>([]);
-const ready = useRef(false); // a flag that never renders, so no useState
 
 function play(steps: ReturnType<typeof animate>[]) {
   running.current.forEach((a) => a.stop()); // never stack sequences
@@ -251,7 +249,6 @@ function play(steps: ReturnType<typeof animate>[]) {
 }
 
 const onEnter = async () => {
-  ready.current = false;
   await play([
     animate("[data-animate='icon']", { y: -4 }, { duration: 0.3 }),
     ...[...scope.current.querySelectorAll("[data-animate='line']")].map((el, i) =>
@@ -262,11 +259,9 @@ const onEnter = async () => {
       ),
     ),
   ]);
-  ready.current = true;
 };
 
 const onClick = () => {
-  if (!ready.current) return;
   // A repeat action skips the buildup: the same proportions, earlier in the timeline
   play([animate("[data-animate='bg']", { scale: [1, 0.96, 1.02, 1] }, { duration: 0.4 })]);
 };

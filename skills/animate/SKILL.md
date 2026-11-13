@@ -29,7 +29,7 @@ Never present motion options as a menu. Make the call, state the reasoning in on
 ## Hard Rules
 
 1. **Run the sequence in order.** Steps 1 and 2 gate everything. Don't reach for a curve before you know whether it animates at all.
-2. **No approximated values.** Every curve, duration, and spring config comes from the tables below. Never invent `cubic-bezier(0.4, 0, 0.2, 1)` because it looks familiar.
+2. **No approximated values.** Every curve, duration, and spring config comes from the codebase's existing tokens or the tables below. Never invent `cubic-bezier(0.4, 0, 0.2, 1)` because it looks familiar.
 3. **Extend the codebase's tokens, don't fork them.** If `--ease-out` or a duration scale already exists, use it. Adding a parallel system is a defect.
 4. **Reduced motion and hover gating ship with the animation**, not as a follow-up.
 5. **Cheapest tool that works.** Don't install a motion library for a fade.
@@ -72,13 +72,13 @@ Walk down; stop at the first that fits.
 | --- | --- |
 | Hover, press, color, a state toggle you control with a class or attribute | **CSS transition** |
 | Entry animation on mount, no JS state | **CSS `@starting-style`** |
-| Predetermined motion that must stay smooth while the page is busy loading | **CSS animation** (runs off the main thread) |
+| Predetermined motion that must stay smooth while the page is busy loading | **CSS animation** (`transform`/`opacity` run on the compositor) |
 | Programmatic control with CSS performance, no library | **WAAPI** (`element.animate()`) |
 | Springs, layout animations, exit animations, gesture-driven values | **Motion** (`motion.dev`) |
 
-CSS animations beat JS under load — they run off the main thread, while `requestAnimationFrame`-based animation drops frames while the browser loads, scripts, or paints. Use CSS for predetermined motion, JS for dynamic and interruptible motion.
+CSS animations beat JS under load — on `transform`/`opacity` they run on the compositor, while `requestAnimationFrame`-based animation drops frames while the browser loads, scripts, or paints. Use CSS for predetermined motion, JS for dynamic and interruptible motion.
 
-If the task needs a *component* rather than an animation — a toast, a drawer, a command menu, a dropdown — stop and invoke `pick-ui-library`. Hand-rolling those is how you end up with a `<div>` dropdown and no focus management.
+If the task needs a *component* rather than an animation — a toast, a drawer, a command menu, a dropdown — stop and read `../pick-ui-library/SKILL.md` to pick one. Hand-rolling those is how you end up with a `<div>` dropdown and no focus management.
 
 ### 4. Pick the properties
 
@@ -129,7 +129,7 @@ Need a curve that isn't here? Take it from [easing.dev](https://easing.dev/) or 
 | Modals, drawers | 200–500ms |
 | Marketing / explanatory | Can be longer |
 
-**UI animations stay under 300ms.** A 180ms dropdown feels more responsive than a 400ms one.
+**UI animations stay under 300ms. Drawers, sheets, and toasts are the documented exceptions.** A 180ms dropdown feels more responsive than a 400ms one.
 
 **Reach for a spring instead** when the motion is drag with momentum, an element that should feel alive, a gesture the user can interrupt or reverse, or decorative mouse-tracking:
 
@@ -153,8 +153,10 @@ Ships with the animation, every time.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  .element { animation: fade 0.2s ease; } /* keep opacity/color, drop transform-based motion */
+  .element { animation-name: fade; } /* same timing, opacity only — drop transform-based motion */
 }
+
+@keyframes fade { from { opacity: 0; } }
 
 @media (hover: hover) and (pointer: fine) {
   .element:hover { transform: scale(1.05); } /* touch fires false hovers on tap */

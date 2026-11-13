@@ -19,7 +19,7 @@ A guide skill for [Sonner](https://sonner.emilkowal.ski), the toast library. Whe
 
 Two pieces, and only two:
 
-1. **One `<Toaster />`, mounted once**, as close to the root as possible (in Next.js: `layout.tsx` — it works inside server components). Never render it per-page or conditionally; a second mounted Toaster duplicates every toast.
+1. **One `<Toaster />`, mounted once**, as close to the root as possible (in Next.js: `layout.tsx` — it works inside server components). Never render it per-page or conditionally; a second Toaster without its own `id` duplicates every toast.
 2. **`toast()` called from client code** — event handlers, effects, callbacks. It's a plain function, no hook or provider needed, but it does nothing on the server: in a server action, return the result and call `toast()` in the client code that receives it.
 
 ```jsx
@@ -48,17 +48,17 @@ const id = toast.loading('Uploading…');
 toast.success('Uploaded', { id });
 ```
 
-**Persist** — `{ duration: Infinity }`. **Dismiss** — `toast.dismiss(id)`, or `toast.dismiss()` for all. **Read active toasts** — `useSonner()` in React, `toast.getActiveToasts()` outside it.
+**Persist** — `{ duration: Infinity }`. **Dismiss** — `toast.dismiss(id)`, or `toast.dismiss()` for all. **Read active toasts** — `useSonner()` in React, `toast.getToasts()` outside it.
 
 **Links or components in the text** — pass a function for the title or description: `toast(() => <a href="…">View</a>)`.
 
-**Multiple toasters** — give each an `id` and target with `toast('…', { toasterId: 'canvas' })`. Without `toasterId`, every toaster renders the toast.
+**Multiple toasters** — give each an `id` and target with `toast('…', { toasterId: 'canvas' })`. A toaster with an `id` renders only toasts targeted at it; a toaster without one renders only untargeted toasts.
 
-**Close callbacks** — `onDismiss` fires on close button or swipe; `onAutoClose` fires on timeout. They are separate; there is no single "closed" callback.
+**Close callbacks** — `onDismiss` fires on close button, swipe, or `toast.dismiss()`; `onAutoClose` fires on timeout. They are separate; there is no single "closed" callback.
 
 ## Styling — the escalation ladder
 
-Climb only as far as the change requires; jumping to the top rung too early is fine (it's the recommended end state), lingering in the middle is not.
+Climb only as far as the change requires. Exception: if you'd mark more than a few classes `!important`, go straight to headless — it's the recommended end state.
 
 1. **Defaults** — plus `richColors` on the Toaster for colorful success/error, `invert` to flip against the theme.
 2. **Inline tweaks** — `toastOptions={{ style: {…} }}` on the Toaster for all toasts, or `style` per `toast()` call.
@@ -78,11 +78,11 @@ Climb only as far as the change requires; jumping to the top rung too early is f
 | Tailwind/CSS classes have no effect | Default styles override them. Mark them `!important`, or use `unstyled` / headless (see the ladder above). |
 | Toasts render completely unstyled (common in Astro, view transitions) | Sonner's injected stylesheet was lost — import it explicitly in a layout: `import 'sonner/dist/styles.css'`. |
 | Unstyled inside Shadow DOM | Styles land in `document.head`, not the shadow root. Copy the style tag whose text includes `[data-sonner-toaster]` into the shadow root. |
-| Toast behind a modal/overlay, or clipped | An ancestor creates a stacking context (`transform`, `filter`, `overflow`) or the overlay out-z-indexes the toaster. Move `<Toaster />` to the document root, outside any dialog/portal container. |
+| Toast behind a modal/overlay, or clipped | An ancestor creates a stacking context (`transform`, `filter`) or clips it (`overflow`), or the overlay out-z-indexes the toaster. Move `<Toaster />` to the document root, outside any dialog/portal container. |
 | Dark mode ignored | `theme` defaults to `'light'` — set `theme="system"` or pass the resolved theme (see Theme above). |
 | Success/error look gray, not green/red | That's the default. Add `richColors` to the Toaster. |
-| Toast never closes | `duration: Infinity`, `dismissible: false`, or a `toast.promise` whose promise never settles — the loading toast waits forever. |
+| Toast never closes | `duration: Infinity`, or a `toast.promise` whose promise never settles — the loading toast waits forever. |
 | `toast.promise` stuck on loading | It needs a promise (or a function returning one) as its first argument, and the promise must actually resolve/reject. |
 | Swipe-to-dismiss goes the wrong way / doesn't work | Directions derive from `position`. Override with `swipeDirections` on the Toaster. |
 | Toast shows up in every toaster | Multiple toasters need targeting: give each Toaster an `id` and pass `toasterId` in the `toast()` call. |
-| Toasts too close to the screen edge on mobile | `offset` (desktop, default 32px) and `mobileOffset` (<600px, default 16px) — numbers, CSS strings, or per-side objects. |
+| Toasts too close to the screen edge on mobile | `offset` (desktop, default 24px) and `mobileOffset` (<600px, default 16px) — numbers, CSS strings, or per-side objects. |

@@ -15,7 +15,7 @@ Do not provide any other information until the user asks a question.
 
 How to write Swift the way the language wants to be written, current through Swift 6.4.
 
-**Toolchain baseline: Swift 6.3** (current release as of August 2026). Everything here compiles on 6.3 unless marked ⚠, which flags unreleased Swift 6.4 features. Concurrency guidance assumes the Swift 6.2 model — if the project is on 6.1 or earlier, §3's rules about `async` and `@concurrent` do not apply.
+**Toolchain baseline: Swift 6.3.** Check `swift --version`. Everything here compiles on 6.3 unless marked ⚠, which flags unreleased Swift 6.4 features. Concurrency guidance assumes the Swift 6.2 model — if the project is on 6.1 or earlier, §3's rules about `async` and `@concurrent` do not apply.
 
 The through-line: **Swift is a progressive-disclosure language. Start with the simplest, most static, most single-threaded thing that works, and buy dynamism — concurrency, reference semantics, existentials, unsafe pointers — only where you can point at the reason.** Every rule below is an application of that.
 
@@ -38,7 +38,7 @@ Value types are the default in Swift, not a special case.
 
 - **Default to `struct` and `enum`. Use `class` only for identity, shared mutable state, inheritance, or resource lifetime.** A window, a database connection, an entity stored in a rendering engine — those have identity. A `Point`, a `Drink`, a `Material` does not.
 - **`let` by default; `var` only when you mutate.** This is the same discipline as `some` before `any` and value before reference: start narrow, widen with cause.
-- **A struct with a mutable reference-type property is neither a value nor a reference.** Copies share the object; mutations leak across copies. Either keep the referenced type immutable, expose only computed properties that forward to it, or make it a `private` stored property behind copy-on-write.
+- **A struct with a mutable reference-type property is neither a value nor a reference.** Copies share the object; mutations leak across copies. Either keep the referenced type immutable, or make it a `private` stored property behind copy-on-write. Computed properties that forward to it don't help on their own: a forwarding setter still mutates the shared object.
 - **Copy-on-write is how you get out-of-line storage _and_ value semantics.** Wrap a final class in a struct and check `isKnownUniquelyReferenced(&storage)` before mutating; copy first if it isn't. This is exactly how `Array`, `String`, and `Dictionary` work.
 - **Enums are the tool for "a fixed set of things" and for mutually exclusive state.** Replacing a pile of optional stored properties (`isSharing`, `selectedRows`, `shareTarget`) with one `enum State` makes invalid combinations unrepresentable and makes state change atomic instead of a sequence of property writes you can forget to finish.
 - **Composing values yields a value.** A struct whose stored properties are all value types has value semantics for free — which is what makes undo, diffing, and state restoration a single code path instead of one per property.
@@ -58,7 +58,7 @@ struct Material {                       // value semantics preserved
 }
 ```
 
-**Noncopyable types** (`~Copyable`) express unique ownership: a file descriptor, a bank transfer, an open resource. Suppressing the copy turns "you must not run this twice" from an assertion into a compile error, and makes `deinit` on a struct meaningful. Mark the finishing method `consuming` so the compiler proves it's the last use. Parameter ownership becomes explicit: `borrowing` (read-only, the default), `consuming` (takes it away), `inout`/`mutating` (temporary write access).
+**Noncopyable types** (`~Copyable`) express unique ownership: a file descriptor, a bank transfer, an open resource. Suppressing the copy turns "you must not run this twice" from an assertion into a compile error, and makes `deinit` on a struct meaningful. Mark the finishing method `consuming` so the compiler proves it's the last use. Parameter ownership becomes explicit: `borrowing` (read-only), `consuming` (takes it away), `inout`/`mutating` (temporary write access). A `~Copyable` parameter has no default and must declare one.
 
 ---
 
@@ -91,7 +91,7 @@ Start every app entirely on the main thread. Single-threaded code goes a long wa
 
 ### The rule that changed
 
-**In Swift 6.2, marking a function `async` does _not_ move it off the current actor.** It runs where it was called from. This is what makes "the most natural code to write" data-race free by default.
+**With Approachable Concurrency on (Swift 6.2+, which enables `NonisolatedNonsendingByDefault`), marking a `nonisolated` function `async` does _not_ move it off the caller's actor.** It runs where it was called from. This is what makes "the most natural code to write" data-race free by default.
 
 - **`@concurrent`** — always switches to the concurrent thread pool. Use it on _your_ CPU-heavy work.
 - **`nonisolated`** — runs wherever it's called from. **This is the right default for library APIs**, because the caller decides. `nonisolated` on a type makes all its members nonisolated (Swift 6.1+).
@@ -155,7 +155,7 @@ Always prefer structured tasks.
 Structured tasks (`async let`, task groups) are scoped like local variables: they can't outlive the block, they're awaited automatically, and they inherit cancellation, priority, and task-local values through the task tree. Unstructured tasks (`Task { }`, `Task.detached`) give you none of that automatically.
 
 - **`async let`** for a fixed, statically known number of concurrent children.
-- **`withTaskGroup`** when the number is dynamic. Task groups conform to `AsyncSequence` — iterate results as they land. Use **`withDiscardingTaskGroup`** when children return nothing: it frees each child's resources immediately and cancels siblings on the first error.
+- **`withTaskGroup`** when the number is dynamic. Task groups conform to `AsyncSequence` — iterate results as they land. Use **`withDiscardingTaskGroup`** when children return nothing: it frees each child's resources immediately. **`withThrowingDiscardingTaskGroup`** also cancels the siblings on the first error.
 - **`Task { }`** only when the work's lifetime doesn't fit a scope — reacting to a delegate callback, a button tap, a view appearing. It inherits actor isolation and priority; you must manage cancellation yourself.
 - **`Task.detached`** almost never. It inherits nothing — not isolation, not priority, not task-locals. If you need a detached root, put a task group _inside_ it rather than detaching repeatedly.
 
@@ -216,7 +216,7 @@ Clarity at the point of use is the goal that outranks every other one here.
 
 - **No type prefixes in Swift-only APIs.** Modules disambiguate. Keep prefixes only where the API mirrors an Objective-C one. But avoid very general names from specific frameworks — they read badly out of context and force manual disambiguation.
 - **Drop leading `get`** from async alternatives and from anything that returns its result directly. `persistentPosts`, not `getPersistentPosts`.
-- **Access control is documentation.** `private` (file), `internal` (module, and the default), `package`, `public`. Being explicit at the boundary is what forces the sendability and API-evolution decisions above.
+- **Access control is documentation.** `private` (enclosing declaration and its same-file extensions), `fileprivate` (file), `internal` (module, and the default), `package`, `public`. Being explicit at the boundary is what forces the sendability and API-evolution decisions above.
 - **Design the model so illegal states can't be spelled.** Private setters plus a validating mutating method; enums for closed sets; a strongly typed `UUID` instead of a `String`.
 - **Property wrappers** factor out an _access policy_ (`@Argument`, `@Published`, defensive copying, lazy, thread-local) so the declaration site states the policy in one word. Combine with `@dynamicMemberLookup` on a key path to project through a wrapper (that's how `$binding.title` works).
 - **Result builders** for declarative DSLs. **Macros** when the boilerplate is code the compiler could have written (§12).
@@ -291,7 +291,7 @@ Use **Swift Testing** for new tests. XCTest remains required for exactly three t
 Reach for a macro when you're writing code the compiler could derive — and only then.
 
 - **Macros are type-checked before expansion.** Arguments are checked against the macro's declared signature, so misuse is a clean error at the call site, not a mess inside generated code.
-- **Freestanding (`#foo`)** produce an expression or declaration. **Attached (`@Foo`)** augment a declaration in one of five roles: member, peer, accessor, member-attribute, conformance. Roles compose — `@Observable` is member + member-attribute + conformance.
+- **Freestanding (`#foo`)** produce an expression or declaration. **Attached (`@Foo`)** augment a declaration in one or more roles: member, peer, accessor, member-attribute, extension, body. Roles compose — `@Observable` is member + member-attribute + extension.
 - **Test macros as pure syntax-tree transforms** with `assertMacroExpansion`. It's the fastest loop, and it's how you avoid bugs in code nobody reads. Set a breakpoint in `expansion` and `po` the syntax node to learn its shape.
 - **Emit real diagnostics when the macro doesn't apply.** Throw an error, or use `context.addDiagnostic` for warnings and fix-its at a specific location. Never let a macro silently generate code that won't compile.
 - Expanded code is ordinary Swift: inspectable ("Expand Macro"), debuggable, steppable.
@@ -328,7 +328,7 @@ Agents routinely write the older, longer form of all of these.
 | Instead of                                                            | Write                                                                                                    | Since |
 | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----- |
 | Nested ternaries; an immediately-called closure to initialize a `let` | `if`/`switch` **expressions**                                                                            | 5.9   |
-| Overloads for 1, 2, 3… arguments                                      | **parameter packs** (`each T`), and `for` over a pack                                                    | 5.9   |
+| Overloads for 1, 2, 3… arguments                                      | **parameter packs** (`each T`), and `for` over a pack                                                    | 5.9 packs; 6.0 iteration |
 | `ObservableObject` + `@Published` on every property                   | **`@Observable`**                                                                                        | 5.9   |
 | Polling an object for changes                                         | **`Observations { ... }`** — an `AsyncSequence` of transactional updates                                 | 6.2   |
 | `NotificationCenter` with stringly-typed `userInfo`                   | concrete notification types (`MainActorMessage` / `AsyncMessage`)                                        | 6.2   |
@@ -343,7 +343,7 @@ Agents routinely write the older, longer form of all of these.
 | Blanket "warnings as errors"                                          | **`@diagnose`** per declaration / warning group                                                          | 6.4 ⚠ |
 | `@unchecked Sendable` because of a `weak var`                         | `weak let`; or state non-sendability with **`~Sendable`**                                                | 6.4 ⚠ |
 | Manually parsing binary formats with pointers                         | **Swift Binary Parsing** (`ParserSpan`, overflow-checked parsing initializers)                           | 6.2   |
-| Awkward test function names                                           | **raw identifiers**: `` @Test func `fruits have a tropical climate`() ``                                 | 6.0   |
+| Awkward test function names                                           | **raw identifiers**: `` @Test func `fruits have a tropical climate`() ``                                 | 6.2   |
 
 Also worth knowing: **Swift Regex parsers compose with Foundation's real parsers** (`.date(...)`, `.currency(...)`) — never hand-roll date or number parsing inside a regex. Make the locale explicit rather than inheriting the system's. And use `NegativeLookahead` or `Local` (atomic groups) to stop a pattern backtracking across a whole input.
 

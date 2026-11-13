@@ -13,15 +13,16 @@ Exact props, types, and defaults. Options passed to `toast()` override the same 
 | `id` | `string` | – | Toaster id, targeted by `toast()`'s `toasterId` option. |
 | `position` | `string` | `'bottom-right'` | `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`. |
 | `closeButton` | `boolean` | `false` | Adds a close button to all toasts. |
-| `offset` | `string \| number \| object` | `'32px'` | Offset from screen edges. Object form is per-side: `{ bottom: '24px', right: '16px' }`. |
+| `offset` | `string \| number \| object` | `'24px'` | Offset from screen edges. Object form is per-side: `{ bottom: '24px', right: '16px' }`. |
 | `mobileOffset` | `string \| number \| object` | `'16px'` | Offset when screen width < 600px. |
 | `swipeDirections` | `array` | based on position | Allowed swipe-to-dismiss directions. |
-| `dir` | `string` | `'ltr'` | Text directionality. |
-| `hotkey` | `string` | `⌥/alt + T` | Keyboard shortcut that focuses the toaster area. |
+| `dir` | `'ltr' \| 'rtl' \| 'auto'` | document direction | Text directionality. |
+| `hotkey` | `string[]` | `['altKey', 'KeyT']` | Keyboard shortcut that focuses the toaster area. |
 | `invert` | `boolean` | `false` | Dark toasts in light mode and vice versa. |
 | `toastOptions` | `object` | – | Default options applied to every toast (any `toast()` option below). |
 | `gap` | `number` | `14` | Gap between toasts when expanded. |
 | `icons` | `object` | – | Replace default icons: `{ success, info, warning, error, loading }`; `null` removes one. |
+| `containerAriaLabel` | `string` | `'Notifications'` | ARIA label for the toast container. |
 
 ## `toast()` options
 
@@ -40,15 +41,14 @@ Exact props, types, and defaults. Options passed to `toast()` override the same 
 | `cancel` | `ReactNode \| { label, onClick }` | – | Secondary button; clicking closes the toast. |
 | `actionButtonStyle` | `object` | `{}` | Styles for the action button. |
 | `cancelButtonStyle` | `object` | `{}` | Styles for the cancel button. |
-| `id` | `string` | – | Custom id; calling `toast()` again with the same id updates the existing toast. |
+| `id` | `string \| number` | – | Custom id; calling `toast()` again with the same id updates the existing toast. |
 | `testId` | `string` | – | Rendered as `data-testid` for e2e tests. |
 | `toasterId` | `string` | – | Id of the toaster to render this toast in. |
 | `style` | `object` | – | Inline styles for the toast. |
 | `classNames` | `object` | – | Classes per part: `{ toast, title, description, actionButton, cancelButton, closeButton }`. Needs `!important` unless `unstyled`. |
 | `unstyled` | `boolean` | `false` | Removes all default styles. |
-| `onDismiss` | `(toast) => void` | – | Fires when the close button is clicked or the toast is swiped away. |
+| `onDismiss` | `(toast) => void` | – | Fires when the close button is clicked, the toast is swiped away, or `toast.dismiss()` closes it. |
 | `onAutoClose` | `(toast) => void` | – | Fires when the toast closes automatically after `duration`. |
-| `containerAriaLabel` | `string` | `'Notifications'` | ARIA label for the toast container. |
 
 ## Functions
 
@@ -60,5 +60,5 @@ Exact props, types, and defaults. Options passed to `toast()` override the same 
 | `toast.promise(promise, { loading, success, error })` | Loading toast that resolves with the promise; `success`/`error` accept strings, JSX, functions of the result, or objects of toast options. |
 | `toast.custom((t) => jsx, opts?)` | Headless toast — your JSX, Sonner's behavior. |
 | `toast.dismiss(id?)` | Dismiss one toast, or all when called without an id. |
-| `toast.getActiveToasts()` | All active toasts, usable outside React. |
+| `toast.getToasts()` | All active toasts, usable outside React. `toast.getHistory()` includes dismissed ones. |
 | `useSonner()` | React hook returning `{ toasts }`. |

@@ -1,6 +1,6 @@
 ---
 name: emil-design-eng
-description: This skill encodes Emil Kowalski's philosophy on UI polish, component design, animation decisions, and the invisible details that make software feel great.
+description: Emil Kowalski's design-engineering philosophy for UI polish, component design, animation decisions, and the invisible details that make software feel great. Use when building or reviewing a UI component's interactions and polish (press and hover states, popover origin, tooltip timing, transitions vs keyframes, clip-path techniques, drag details) and no narrower skill fits.
 ---
 
 # Design Engineering
@@ -41,7 +41,7 @@ When reviewing UI code, you MUST use a markdown table with Before/After columns.
 
 | Before | After | Why |
 | --- | --- | --- |
-| `transition: all 300ms` | `transition: transform 200ms ease-out` | Specify exact properties; avoid `all` |
+| `transition: all 300ms` | `transition: transform 200ms var(--ease-out)` | Specify exact properties; avoid `all` |
 | `transform: scale(0)` | `transform: scale(0.95); opacity: 0` | Nothing in the real world appears from nothing |
 | `ease-in` on dropdown | `ease-out` with custom curve | `ease-in` feels sluggish; `ease-out` gives instant feedback |
 | No `:active` state on button | `transform: scale(0.97)` on `:active` | Buttons must feel responsive to press |
@@ -51,7 +51,7 @@ Wrong format (never do this):
 
 ```
 Before: transition: all 300ms
-After: transition: transform 200ms ease-out
+After: transition: transform 200ms var(--ease-out)
 ────────────────────────────
 Before: scale(0)
 After: scale(0.95)
@@ -132,7 +132,7 @@ Is the element entering or exiting?
 | Modals, drawers          | 200-500ms     |
 | Marketing/explanatory    | Can be longer |
 
-**Rule: UI animations should stay under 300ms.** A 180ms dropdown feels more responsive than a 400ms one. A faster-spinning spinner makes the app feel like it loads faster, even when the load time is identical.
+**Rule: UI animations stay under 300ms. Drawers, sheets, and toasts are the documented exceptions** (drawers up to 500ms; toasts use Sonner's 400ms `ease`, see Cohesion). A 180ms dropdown feels more responsive than a 400ms one. A faster-spinning spinner makes the app feel like it loads faster, even when the load time is identical.
 
 ### Perceived performance
 
@@ -160,13 +160,15 @@ Springs feel more natural than duration-based animations because they simulate r
 Tying visual changes directly to mouse position feels artificial because it lacks motion. Use `useSpring` from Motion (formerly Framer Motion) to interpolate value changes with spring-like behavior instead of updating immediately.
 
 ```jsx
-import { useSpring } from 'framer-motion';
+import { useSpring, useTransform } from 'motion/react';
+
+// mouseX is a motion value (useMotionValue), updated on pointermove
 
 // Without spring: feels artificial, instant
-const rotation = mouseX * 0.1;
+const rotation = useTransform(mouseX, (x) => x * 0.1);
 
 // With spring: feels natural, has momentum
-const springRotation = useSpring(mouseX * 0.1, {
+const springRotation = useSpring(rotation, {
   stiffness: 100,
   damping: 10,
 });
@@ -202,7 +204,7 @@ Add `transform: scale(0.97)` on `:active`. This gives instant feedback, making t
 
 ```css
 .button {
-  transition: transform 160ms ease-out;
+  transition: transform 160ms var(--ease-out);
 }
 
 .button:active {
@@ -250,7 +252,7 @@ Tooltips should delay before appearing to prevent accidental activation. But onc
 
 ```css
 .tooltip {
-  transition: transform 125ms ease-out, opacity 125ms ease-out;
+  transition: transform 125ms var(--ease-out), opacity 125ms var(--ease-out);
   transform-origin: var(--transform-origin);
 }
 
@@ -297,7 +299,7 @@ Combine blur with scale-on-press (`scale(0.97)`) for a polished button state tra
 
 ```css
 .button {
-  transition: transform 160ms ease-out;
+  transition: transform 160ms var(--ease-out);
 }
 
 .button:active {
@@ -412,7 +414,7 @@ Every element has an anchor point from which transforms execute. The default is 
 /* Reveal from left to right */
 .overlay {
   clip-path: inset(0 100% 0 0);
-  transition: clip-path 200ms ease-out;
+  transition: clip-path 200ms var(--ease-out);
 }
 .button:active .overlay {
   clip-path: inset(0 0 0 0);
@@ -434,7 +436,7 @@ Start with `clip-path: inset(0 0 100% 0)` (hidden from bottom). Animate to `inse
 
 ### Comparison sliders
 
-Overlay two images. Clip the top one with `clip-path: inset(0 50% 0 0)`. Adjust the right inset value based on drag position. No extra DOM elements needed, fully hardware-accelerated.
+Overlay two images. Clip the top one with `clip-path: inset(0 50% 0 0)`. Adjust the right inset value based on drag position. No extra DOM elements needed.
 
 ## Gesture and Drag Interactions
 
@@ -506,11 +508,11 @@ From `motion` 14.2, Motion's shorthand properties (`x`, `y`, `scale`, `rotate`) 
 
 Some Motion animations still run on the main thread in every version: layout animations (`layout`, `layoutId`), animations with `onUpdate` or `transformTemplate`, inertia (drag momentum), and values driven every frame by a motion value (drag, `useTransform`).
 
-This matters when the browser is simultaneously loading content, running scripts, or painting. At Vercel, the dashboard tab animation used Shared Layout Animations and dropped frames during page loads. Switching to CSS animations (off main thread) fixed it.
+This matters when the browser is simultaneously loading content, running scripts, or painting. At Vercel, the dashboard tab animation used Shared Layout Animations and dropped frames during page loads. Switching to CSS animations (on `transform`/`opacity`, they run on the compositor) fixed it.
 
 ### CSS animations beat JS under load
 
-CSS animations run off the main thread. When the browser is busy loading a new page, animations that run on `requestAnimationFrame` (including Motion layout animations) drop frames. CSS animations remain smooth. Use CSS for predetermined animations; JS for dynamic, interruptible ones.
+CSS animations of `transform` and `opacity` run on the compositor, off the main thread. When the browser is busy loading a new page, animations that run on `requestAnimationFrame` (including Motion layout animations) drop frames. CSS animations remain smooth. Use CSS for predetermined animations; JS for dynamic, interruptible ones.
 
 ### Use WAAPI for programmatic CSS animations
 
@@ -537,6 +539,12 @@ Animations can cause motion sickness. Reduced motion means fewer and gentler ani
     /* No transform-based motion */
   }
 }
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
 ```
 
 ```jsx
@@ -558,7 +566,7 @@ Touch devices trigger hover on tap, causing false positives. Gate hover animatio
 
 ## The Sonner Principles (Building Loved Components)
 
-These principles come from building Sonner (13M+ weekly npm downloads) and apply to any component:
+These principles come from building Sonner and apply to any component:
 
 1. **Developer experience is key.** No hooks, no context, no complex setup. Insert `<Toaster />` once, call `toast()` from anywhere. The less friction to adopt, the more people will use it.
 
@@ -593,7 +601,7 @@ Pressing should be slow when it needs to be deliberate (hold-to-delete: 2s linea
 ```css
 /* Release: fast */
 .overlay {
-  transition: clip-path 200ms ease-out;
+  transition: clip-path 200ms var(--ease-out);
 }
 
 /* Press: slow and deliberate */
@@ -610,7 +618,7 @@ When multiple elements enter together, stagger their appearance. Each element an
 .item {
   opacity: 0;
   transform: translateY(8px);
-  animation: fadeIn 300ms ease-out forwards;
+  animation: fadeIn 300ms var(--ease-out) forwards;
 }
 
 .item:nth-child(1) {
@@ -634,7 +642,7 @@ When multiple elements enter together, stagger their appearance. Each element an
 }
 ```
 
-Keep stagger delays short (30-80ms between items). Long delays make the interface feel slow. Stagger is decorative — never block interaction while stagger animations are playing.
+Keep stagger delays short (30-80ms between items). Long delays make the interface feel slow. Stagger is decorative — never block interaction while stagger animations are playing. For group entrances, follow `../choreograph/SKILL.md` (one entrance per container, non-uniform delays).
 
 ## Debugging Animations
 
@@ -663,14 +671,14 @@ When reviewing UI code, check for:
 
 | Issue                                      | Fix                                                              |
 | ------------------------------------------ | ---------------------------------------------------------------- |
-| `transition: all`                          | Specify exact properties: `transition: transform 200ms ease-out` |
+| `transition: all`                          | Specify exact properties: `transition: transform 200ms var(--ease-out)` |
 | `scale(0)` entry animation                 | Start from `scale(0.95)` with `opacity: 0`                       |
 | `ease-in` on UI element                    | Switch to `ease-out` or custom curve                             |
 | `transform-origin: center` on popover      | Set to trigger location or use Base UI's `var(--transform-origin)` (modals are exempt — keep centered) |
 | Animation on keyboard action               | Remove animation entirely                                        |
-| Duration > 300ms on UI element             | Reduce to 150-250ms                                              |
+| Duration > 300ms on UI element (not a drawer, sheet, or toast) | Reduce to 150-250ms                              |
 | Hover animation without media query        | Add `@media (hover: hover) and (pointer: fine)`                  |
 | Keyframes on rapidly-triggered element     | Use CSS transitions for interruptibility                         |
 | Motion `x`/`y` props under load (pre-14.2) | Upgrade to 14.2+, or use `transform: "translateX()"`             |
-| Same enter/exit transition speed           | Make exit faster than enter (e.g., enter 2s, exit 200ms)         |
-| Elements all appear at once                | Add stagger delay (30-80ms between items)                        |
+| Same enter/exit transition speed           | Make exit faster than enter (e.g., enter 250ms, exit 200ms)      |
+| Elements all appear at once                | Add stagger delay (30-80ms between items, non-uniform; see `../choreograph/SKILL.md`) |

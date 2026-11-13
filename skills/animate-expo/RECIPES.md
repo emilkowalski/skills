@@ -32,7 +32,7 @@ Imports and constants every recipe below shares:
 import { useState, useEffect, useMemo } from 'react';
 import Animated, {
   useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, useAnimatedReaction,
-  withSpring, withTiming, interpolate, Extrapolation, Easing,
+  withSpring, withTiming, cancelAnimation, interpolate, Extrapolation, Easing,
   FadeInDown, FadeOutDown, LinearTransition,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -86,7 +86,7 @@ function rubberband(overshoot, dimension, constant = 0.55) {
 
 ## Press feedback
 
-Every pressable in the app. This passes the frequency gate only because it's near-imperceptible: 120ms and a 3% scale is the ceiling for something touched this often — anything longer or larger belongs to rarer moments, per step 1 in SKILL.md. No gesture, no shared value — a CSS transition is the whole implementation.
+Every pressable in the app. This passes the frequency gate only because it's near-imperceptible: 120ms and a 3% scale, inside the 100–150ms press budget — anything longer or larger belongs to rarer moments, per step 1 in SKILL.md. No gesture, no shared value — a CSS transition is the whole implementation.
 
 ```jsx
 import Animated from 'react-native-reanimated';
@@ -133,6 +133,7 @@ const context = useSharedValue(0);
 const pan = useMemo(() => Gesture.Pan()
   .activeOffsetY([-10, 10])   // let a horizontal swipe win; require intent before committing
   .onStart(() => {
+    cancelAnimation(translateY);     // stop a running spring so the grab doesn't jump
     context.set(translateY.get());   // start from the current on-screen value, not from 0
   })
   .onUpdate((e) => {
@@ -182,7 +183,7 @@ const context = useSharedValue(0);
 
 const pan = useMemo(() => Gesture.Pan()
   .activeOffsetX([-10, 10])   // must declare the axis, or it fights the vertical scroll
-  .onStart(() => { context.set(x.get()); })   // grab mid-spring continues from where the row is, not from 0
+  .onStart(() => { cancelAnimation(x); context.set(x.get()); })   // grab mid-spring continues from where the row is, not from 0
   .onUpdate((e) => { x.set(Math.min(0, context.get() + e.translationX)); })
   .onEnd((e) => {
     const projected = x.get() + project(e.velocityX);
@@ -224,7 +225,7 @@ const titleStyle = useAnimatedStyle(() => ({
 
 **Never animate the header's `height` to collapse it.** That runs a layout pass on the header and everything below it on every scroll frame — the one animation guaranteed to stutter, because it's competing with the scroll itself. Give the container a fixed height and translate the content inside it, clipping with `overflow: 'hidden'`.
 
-`Extrapolation.CLAMP` is not optional: without it, scrolling past 60 keeps driving opacity negative and the header reappears inverted at the bottom of a long list.
+`Extrapolation.CLAMP` is not optional: without it, scrolling past 60 keeps driving `translateY` past −12 and the title slides out of its container.
 
 ---
 
@@ -312,7 +313,7 @@ Configure the native stack. Never rebuild a screen transition in JS: the native 
 
 ```jsx
 <Stack screenOptions={{ animation: reduced ? 'fade' : 'default' }}>
-  <Stack.Screen name="settings" options={{ animation: 'slide_from_right', animationMatchesGesture: true }} />
+  <Stack.Screen name="settings" options={{ animation: reduced ? 'fade' : 'slide_from_right', animationMatchesGesture: true }} />
   <Stack.Screen name="compose" options={{ presentation: 'modal' }} />
   <Stack.Screen name="filter" options={{
     presentation: 'formSheet',

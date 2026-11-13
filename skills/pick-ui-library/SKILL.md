@@ -1,6 +1,6 @@
 ---
 name: pick-ui-library
-description: Pick the right library for a given frontend task from a curated, opinionated list — numbers, OTP inputs, charts, command menus, virtualization, drag and drop, toasts, state, styling, and more. Only runs when explicitly invoked; it does not trigger on its own.
+description: Pick the library for a frontend task from a curated list — primitives, toasts, drawers, command menus, OTP, numbers, charts, virtualization, drag and drop, state, styling.
 disable-model-invocation: true
 ---
 
@@ -32,8 +32,9 @@ A lookup skill. When invoked with a task ("I need toasts", "what should I use fo
 | Unstyled, accessible UI components (dialogs, popovers, menus, selects…) | [base-ui](https://base-ui.com) |
 | Command menus (⌘K palettes) | [cmdk](https://cmdk.paco.me) |
 | Toasts / notifications | [Sonner](https://sonner.emilkowal.ski) |
+| Drawers / bottom sheets | [Vaul](https://vaul.emilkowal.ski) |
 | One-time password / verification code inputs | [input-otp](https://input-otp.rodz.dev) |
-| Customizable GUIs / control panels | [Leva](https://github.com/pmndrs/leva) — [dialkit](https://joshpuckett.me/dialkit) is an alternative |
+| Customizable GUIs / control panels | [Leva](https://github.com/pmndrs/leva) |
 
 ### Motion & visuals
 
@@ -43,7 +44,7 @@ A lookup skill. When invoked with a task ("I need toasts", "what should I use fo
 | Animating numbers (counters, prices, stats) | [NumberFlow](https://number-flow.barvian.me) |
 | Animated text components | [torph](https://torph.lochie.me/) |
 | 3D globes | [Cobe](https://cobe.vercel.app) |
-| Dynamic OG images (HTML/CSS → SVG/PNG) | [Satori](https://github.com/vercel/satori) |
+| Dynamic OG images (HTML/CSS → SVG) | [Satori](https://github.com/vercel/satori) |
 | Syntax highlighting | [shiki](https://shiki.style) |
 
 Reach for motion when you need springs, layout animations, exit animations, or gesture-driven values. A simple hover or fade doesn't need it — plain CSS transitions are the right tool there.

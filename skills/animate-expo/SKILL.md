@@ -33,7 +33,7 @@ Two failure modes, and the first is worse:
 ## Hard Rules
 
 1. **Run the sequence in order.** Steps 1 and 2 gate everything.
-2. **Reanimated, not core `Animated`.** Core `Animated` can't be driven by a gesture without crossing the bridge, and `useNativeDriver` refuses anything but transform and opacity anyway. Reanimated worklets run on the UI thread and keep running while JS is busy.
+2. **Reanimated, not core `Animated`.** Core `Animated` can't run gesture logic (thresholds, release springs) on the UI thread, and `useNativeDriver` refuses anything but transform and opacity anyway. Reanimated worklets run on the UI thread and keep running while JS is busy.
 3. **No approximated values.** Curves and spring configs come from the tables below.
 4. **Reduced motion ships with the animation**, not as a follow-up.
 5. **Feel is judged on a release build on the slowest device you support.** Nothing else counts as verified.
@@ -105,7 +105,7 @@ Reach for a shared value only when the value is continuous or interruptible. A p
 
 ### 5. Timing or spring
 
-**If a finger was involved, use a spring.** Springs carry velocity through an interruption; timing curves restart. Everything else uses timing.
+**If a finger is dragging, flinging, or releasing it, use a spring.** Press feedback is a discrete state change and uses timing. Springs carry velocity through an interruption; timing curves restart. Everything else uses timing.
 
 Reanimated's spring takes Apple's two designer parameters directly — use this form, not mass/stiffness/damping:
 
@@ -175,14 +175,14 @@ Mobile has a sense the web doesn't. Use it sparingly and it becomes the thing th
 | Moment | Call |
 | --- | --- |
 | A value ticks past a step — picker, slider detent, segmented control | `Haptics.selectionAsync()` |
-| Something snaps home, a sheet detent catches, a drag commits | `Haptics.impactAsync(ImpactFeedbackStyle.Light)` |
-| A heavy object lands, a destructive action fires | `Haptics.impactAsync(ImpactFeedbackStyle.Medium)` |
-| Operation succeeded or failed | `Haptics.notificationAsync(NotificationFeedbackType.Success / Error)` |
+| Something snaps home, a sheet detent catches, a drag commits | `Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)` |
+| A heavy object lands, a destructive action fires | `Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)` |
+| Operation succeeded or failed | `Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success / Error)` |
 
 Three rules, and they're absolute:
 
 - **Same frame as the visual.** A haptic that lags its animation reads as a glitch, not as feedback. Fire it at the causal moment — the detent catching — not when the animation finishes.
-- **One per user action.** Never on scroll, never per frame, never on an entrance animation the user didn't cause.
+- **One per semantic event** — a step, a snap, a commit. Never on scroll, never per frame, never on an entrance animation the user didn't cause.
 - **Never the only feedback.** Haptics are off system-wide for many users, and silent on most Android hardware. The visual has to stand alone.
 
 From a worklet, haptics must be scheduled back to the RN runtime: `scheduleOnRN(Haptics.selectionAsync)`.

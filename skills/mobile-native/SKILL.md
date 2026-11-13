@@ -67,7 +67,7 @@ Touch has no hover, so browsers fake one: the first tap on an element applies `:
 }
 ```
 
-Both conditions matter. `(hover: hover)` means the primary input can hover. `(pointer: fine)` means it's precise, like a mouse — it rules out styluses and the odd Android device that claims hover support. In Tailwind v4 the `hover:` variant already compiles to `@media (hover: hover)`; in v3 set `future.hoverOnlyWhenSupported`.
+Both conditions matter. `(hover: hover)` means the primary input can hover. `(pointer: fine)` means it's precise, like a mouse — it rules out touchscreens that claim hover with a coarse pointer (some Android devices). In Tailwind v4 the `hover:` variant already compiles to `@media (hover: hover)`; in v3 set `future.hoverOnlyWhenSupported`.
 
 Touch users still need press feedback. Give it to them through `:active` (see §5), which works on every input type.
 
@@ -230,7 +230,7 @@ The status bar and the browser chrome take their color from `theme-color`. One v
 <meta name="color-scheme" content="light dark" />
 ```
 
-Match the value to the color at the very top of your page — the header background, not the brand color. In Next.js set it through the `viewport` export (`themeColor: [{ media, color }]`). If the app switches theme with a class rather than the OS setting, update the tag from JavaScript on toggle. For an installed PWA, `apple-mobile-web-app-status-bar-style` and the manifest's `theme_color`/`background_color` are the same decision.
+Match the value to the color at the very top of your page — the header background, not the brand color. In Next.js set it through the `viewport` export (`themeColor: [{ media, color }]`). If the app switches theme with a class rather than the OS setting, update the tag from JavaScript on toggle. For an installed PWA, set the manifest's `theme_color`/`background_color` to the same colors; `apple-mobile-web-app-status-bar-style` picks `default`, `black`, or `black-translucent`.
 
 ### 11. Right in Chrome, wrong on phone
 
@@ -266,6 +266,9 @@ input, textarea, select {
 
 button, a, [role="button"] {
   touch-action: manipulation;
+}
+
+button, [role="button"] {
   user-select: none;
   -webkit-user-select: none;
 }
@@ -275,7 +278,7 @@ button, a, [role="button"] {
 }
 ```
 
-`interactive-widget=resizes-content` makes the software keyboard shrink the layout viewport on Android Chrome, so `100dvh` and bottom-pinned inputs react to it the way they do on iOS. Drop `overscroll-behavior: none` from `html` if the app is a scrolling document where pull-to-refresh is welcome.
+`interactive-widget=resizes-content` makes the software keyboard shrink the layout viewport on Android Chrome, so `100dvh` and bottom-pinned inputs react to it. Drop `overscroll-behavior: none` from `html` if the app is a scrolling document where pull-to-refresh is welcome.
 
 ## Never Ship
 

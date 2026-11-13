@@ -1,6 +1,6 @@
 ---
 name: animation-performance
-description: Keep web animations inside the frame budget — animate composite-only properties, keep motion off the main thread when the page is busy, and find the cause when an animation drops frames. Covers the layout/paint/composite pipeline, cheaper property swaps, CSS vs WAAPI vs requestAnimationFrame, Motion's hardware-accelerated path, React re-rendering per frame, inherited CSS variable recalculation, blur cost, and when `will-change` actually helps. Use when an animation is janky, choppy, stutters, or drops frames; when choosing which property to animate; when deciding between CSS and JS animation on performance grounds; or when reaching for `will-change` or GPU layers. For choosing easing, duration, or whether to animate at all use animate; for reviewing motion as a whole use review-animations.
+description: Keep web animations inside the frame budget — animate composite-only properties, keep motion off the main thread when the page is busy, and find the cause when an animation drops frames. Use when an animation is janky, choppy, stutters, or drops frames; when choosing which property to animate; when deciding between CSS and JS animation on performance grounds; or when reaching for `will-change` or GPU layers. For choosing easing, duration, or whether to animate at all use animate; for reviewing motion as a whole use review-animations.
 ---
 
 # Animation Performance
@@ -75,11 +75,11 @@ Every property enters this pipeline at one of three points, and the cost differs
 
 | Tier | Properties | Cost |
 | --- | --- | --- |
-| Composite only | `transform`, `opacity`, and in current Chrome/Firefox also `filter`, `clip-path`, `background-color` | Cheapest. Browsers promote these to their own layer. |
+| Composite only | `transform`, `opacity` | Cheapest. Browsers promote these to their own layer. |
 | Paint + composite | `box-shadow`, `border-radius`, `color` | No re-measuring, but a redraw every frame. |
 | Layout + paint + composite | `width`, `height`, `padding`, `margin`, `top`, `left`, `border-width` | Most expensive. One growing element can move everything around it. |
 
-`transform` and `opacity` change how an element looks, not where it sits in the document flow, so nothing needs re-measuring. Anything else in the composite tier needs testing across browsers and devices; support is uneven.
+`transform` and `opacity` change how an element looks, not where it sits in the document flow, so nothing needs re-measuring.
 
 **Swapping down a tier:**
 
@@ -87,14 +87,14 @@ Every property enters this pipeline at one of three points, and the cost differs
 | --- | --- |
 | `width` / `height` / `padding` to grow or shrink | `scale()` |
 | `top` / `left` / `margin` to move | `translate()` (percentages are relative to the element's own size) |
-| `display` / `visibility` swaps | `opacity` |
+| `display` / `visibility` swaps | `opacity`, then `visibility: hidden` once it ends so it stops taking clicks |
 | `box-shadow` | `filter: drop-shadow(…)` |
 
 The last one is the one people miss. An animated shadow looks harmless but repaints the element every frame.
 
 Two things follow:
 
-- **Layout animations don't always drop frames.** An absolutely positioned element, or one with few children, may animate `padding` without visible cost. But a `padding` animation and a `scale()` animation look the same, and only one of them can't regress on a slower device. Pick the one with no downside.
+- **Layout animations don't always drop frames.** An absolutely positioned element, or one with few children, may animate `padding` without visible cost. But when `scale()` gives the look you want (it scales children too and keeps the layout space), only it can't regress on a slower device. Pick it.
 - **Layout properties also move the wrong things.** Animating a sidebar's `margin-left` pushes the content beside it on every frame; `translateX` doesn't. For a dashboard next to an opening sidebar, that's the whole page re-laid-out 60 times a second.
 
 ## Where It Runs

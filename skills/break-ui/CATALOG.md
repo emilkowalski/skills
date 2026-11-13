@@ -13,7 +13,7 @@ Use `example.com`, `example.org`, or `.test` domains for emails and URLs, so the
 | `Aleksandra Wiśniewska-Kowalczyk` | Long, hyphenated, diacritics; wraps to two lines, and the hyphen is a line-break point |
 | `Christopher Alexander Montgomery III` | Long with a suffix; naive first + last initials give `CI` |
 | `Konstantin Oberhauser-Wettstein` | Long and compound; overflows single-line rows |
-| `Jo` | Two letters; leaves the name column mostly empty, and naive initials give `J` |
+| `Jo` | Two letters; leaves the name column mostly empty |
 | `J` | One letter; single-character initials, very short click target if the name is the link |
 | `Ólafur Darri Ólafsson` | Leading accented capital; uppercase/sort logic, initials `ÓÓ` |
 | `Đặng Thị Ngọc Hân` | Stacked Vietnamese diacritics; clipped by tight `line-height` + `overflow: hidden` |
@@ -34,9 +34,9 @@ Unbreakable strings: they have no spaces, so the browser has nowhere to wrap the
 | Value | Breaks |
 | --- | --- |
 | `bartholomew.fitzgerald@northwind-industries-holdings.example.com` | The classic. Pushes every sibling off the row without `overflow-wrap: anywhere` |
-| `a@b.co` | Shortest realistic; layout that assumed a long email looks empty |
+| `a@b.test` | Shortest realistic; layout that assumed a long email looks empty |
 | `first.last+billing-notifications@example.com` | Plus-addressing; validation that rejects `+`, display that truncates the meaningful part |
-| `ops@sub.department.region.example.co.uk` | Many subdomains, two-part TLD; "domain" extraction logic |
+| `ops@sub.department.region.example.test` | Many subdomains; "domain" extraction logic |
 | `https://example.com/workspaces/acme/projects/q3-launch/docs/9f8e7d6c5b4a?tab=comments&filter=unresolved` | Long URL; overflow, and end-truncation hides the part that differs |
 | `9f8e7d6c-5b4a-4c3d-8e2f-1a0b9c8d7e6f` | UUID; monospace width, middle-truncation candidate |
 | `Q3 Board Deck — FINAL (revised) v12 [approved by legal].pdf` | File name; end-truncation hides the version and extension, brackets and dashes in paths |
@@ -65,7 +65,7 @@ Unbreakable strings: they have no spaces, so the browser has nowhere to wrap the
 | `0` | Zero states: "0 members", empty progress bar, division by zero in percentages |
 | `1` | Plurals: "1 members", "1 days ago" |
 | `1284` | Needs a thousands separator: `1,284` |
-| `1000000` | Width of the count badge; consider compact form `1M` where precision doesn't matter |
+| `1000000` | Width of the count badge; use compact form `1M` where precision doesn't matter |
 | `12345678.9` as currency | `$12,345,678.90`; overflows totals columns |
 | `-42.5` | Negative sign, red color logic, parentheses in accounting formats |
 | `0.1 + 0.2` | `0.30000000000000004` rendered raw |
@@ -90,7 +90,7 @@ Unbreakable strings: they have no spaces, so the browser has nowhere to wrap the
 | Value | Breaks |
 | --- | --- |
 | Now | "0 seconds ago" instead of "just now" |
-| 12 days ago, 11 months ago, 3 years ago | Relative-time thresholds; switch to an absolute date after a week or so |
+| 12 days ago, 11 months ago, 3 years ago | Relative-time thresholds; switch to an absolute date after 7 days |
 | A future date | "in 3 days" vs "-3 days ago" |
 | `1970-01-01` | A zero timestamp shown as a real date |
 | `2025-12-31T23:30:00-08:00` | Shows as a different day in UTC and the user's timezone |
