@@ -32,7 +32,7 @@ Every animation in the diff is measured against these. A violation is a finding.
 
 3. **Responsive easing.** Entering/exiting elements use `ease-out` or a strong custom curve. `ease-in` on UI is a block — it delays the moment the user watches most. Built-in CSS easings are too weak; expect custom cubic-beziers. Exception: Sonner-style toasts use 400ms `ease`.
 
-4. **Sub-300ms UI.** UI animations stay under 300ms. Modals, modals, drawers, sheets, and toasts are the documented exceptions; anything else slower on a UI element needs justification or it's a finding. Per-element budgets live in [STANDARDS.md](STANDARDS.md).
+4. **Sub-300ms UI.** UI animations stay under 300ms. Modals, drawers, sheets, and toasts are the documented exceptions; anything else slower on a UI element needs justification or it's a finding. Per-element budgets live in [STANDARDS.md](STANDARDS.md).
 
 5. **Origin & physical correctness.** Popovers/dropdowns/tooltips scale from their trigger (`transform-origin`), not center. Never animate from `scale(0)` — start from `scale(0.9–0.97)` + opacity (Modals are exempt — they stay centered.)
 

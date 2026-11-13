@@ -33,7 +33,7 @@ Decision order for easing:
 --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);     /* iOS-like drawer curve */
 ```
 
-Duration budgets — **UI animations stay under 300ms. Modals, modals, drawers, sheets, and toasts are the documented exceptions** (modals and drawers up to 500ms; Sonner-style toasts use 400ms `ease`):
+Duration budgets — **UI animations stay under 300ms. Modals, drawers, sheets, and toasts are the documented exceptions** (modals and drawers up to 500ms; Sonner-style toasts use 400ms `ease`):
 
 | Element | Duration |
 | --- | --- |

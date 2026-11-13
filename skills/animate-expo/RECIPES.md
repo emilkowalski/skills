@@ -356,7 +356,7 @@ const TOAST_EXIT = FadeOutDown.duration(250).easing(EASE_OUT);
 />
 ```
 
-- **The 300ms cap holds here too.** A toast isn't an exception — it's uninvited, so if anything it should be quicker and quieter than motion the user asked for.
+- **The 300ms cap holds here too.** The web exception is Sonner's 400ms toast; on native a toast is uninvited, so if anything it should be quicker and quieter than motion the user asked for.
 - **It exits the way it entered.** Entering from the bottom and leaving to the side reads as two unrelated elements.
 - **Exit ~20% faster than entry.** The user has finished reading; the arrival deserves the time, the departure doesn't.
 - **Safe area insets, always.** A toast at `bottom: 16` sits under the home indicator on every modern iPhone.
