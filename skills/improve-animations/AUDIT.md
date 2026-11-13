@@ -33,7 +33,7 @@ Decision order for easing:
 --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);     /* iOS-like drawer curve */
 ```
 
-Duration budgets — **UI animations stay under 300ms**:
+Duration budgets — **UI animations stay under 300ms. Modals, drawers, sheets, and toasts are the documented exceptions** (modals and drawers up to 500ms; Sonner-style toasts use 400ms `ease`):
 
 | Element | Duration |
 | --- | --- |
@@ -43,7 +43,7 @@ Duration budgets — **UI animations stay under 300ms**:
 | Modals, drawers | 200–500ms |
 | Marketing / explanatory | Can be longer |
 
-Hunt for: `ease-in` anywhere, bare `ease`/`linear` on entrances, durations > 300ms on UI elements, tooltip delay + animation on every tooltip in a toolbar (after the first, they should be instant).
+Hunt for: `ease-in` anywhere, bare `ease`/`linear` on entrances (Sonner-style toasts excepted), durations > 300ms on UI elements other than modals, drawers, sheets, and toasts, tooltip delay + animation on every tooltip in a toolbar (after the first, they should be instant).
 
 ## 3. Physicality & origin
 
@@ -53,7 +53,7 @@ Hunt for: `ease-in` anywhere, bare `ease`/`linear` on entrances, durations > 300
   .popover { transform-origin: var(--transform-origin); } /* Base UI */
   ```
   **Modals are exempt** — they appear centered; `transform-origin: center` is correct there. Do not report it.
-- **Press feedback**: `transform: scale(0.97)` on `:active` with `transition: transform 160ms ease-out`. Keep it subtle (0.95–0.98).
+- **Press feedback**: `transform: scale(0.97)` on `:active` with `transition: transform 160ms var(--ease-out)`. Keep it subtle (0.95–0.98).
 
 Hunt for: `scale(0)`, pure-fade entrances with no initial transform, `transform-origin: center` (or none) on trigger-anchored elements, pressable elements with no press feedback.
 
@@ -70,7 +70,7 @@ Hunt for: `@keyframes` on toasts/toggles/rapidly-triggered UI, gesture handlers 
 
 ## 5. Performance
 
-- **Animate `transform` and `opacity` only.** `width`/`height`/`margin`/`padding`/`top`/`left` trigger layout + paint + composite.
+- **Prefer `transform` and `opacity`; `clip-path` and measured height (accordions) are the documented exceptions.** `width`/`height`/`margin`/`padding`/`top`/`left` trigger layout + paint + composite.
 - **`transition: all`** animates unintended properties off-GPU — always a finding.
 - **Motion `x`/`y`/`scale` shorthands before `motion` 14.2 are not hardware-accelerated** — they run on the main thread and drop frames under load. Target: upgrade to `motion` 14.2+, where they are accelerated on HTML elements; on older versions, the full transform string, `animate={{ transform: "translateX(100px)" }}`. Layout animations (`layout`, `layoutId`) still run on the main thread in every version.
 - **Don't drive child transforms via a CSS variable on the parent** — it recalcs styles for all children. Set `transform` directly on the element.
@@ -85,6 +85,7 @@ Hunt for: `transition: all`, animated layout properties, Motion shorthand props 
 @media (prefers-reduced-motion: reduce) {
   .element { animation: fade 0.2s ease; } /* keep opacity/color, drop movement */
 }
+@keyframes fade { from { opacity: 0; } }
 @media (hover: hover) and (pointer: fine) {
   .element:hover { transform: scale(1.05); } /* touch fires false hovers on tap */
 }
@@ -98,7 +99,7 @@ Hunt for: movement with no `prefers-reduced-motion` handling, ungated `:hover` m
 
 - Motion should match the product's personality — playful can be bouncier, a dashboard stays crisp. Mismatched personality across components is a finding.
 - Curves and durations should live as shared tokens. Five hand-typed cubic-beziers that almost match is a consolidation finding.
-- Everything-at-once group entrances where a **30–80ms stagger** belongs. Stagger is decorative — it must never block interaction.
+- Everything-at-once group entrances where a **30–80ms stagger** belongs. Stagger is decorative — it must never block interaction. For group entrances, follow `../choreograph/SKILL.md` (one entrance per container, non-uniform delays).
 - A jarring crossfade that shows two overlapping states can be masked with subtle `filter: blur(2px)` during the transition.
 
 Hunt for: duplicated near-identical easings/durations, one bouncy component in a crisp app, list/grid entrances with no stagger, crossfades that visibly double-expose.
@@ -112,4 +113,4 @@ The additive category — places that don't animate but should:
 - Rare, high-emotion moments (first-run, success, celebration) rendered with none of the delight budget they're allowed.
 - `translate` percentages (`translateY(100%)` = element's own height) and `clip-path: inset()` reveals as tools for these — no hardcoded pixel offsets.
 
-Report at most a handful, grounded in actual UX seams you observed — not a wishlist.
+Report at most 4, grounded in actual UX seams you observed — not a wishlist.

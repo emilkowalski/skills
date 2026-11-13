@@ -1,6 +1,6 @@
 ---
 name: learn-taste
-description: Turn the design corrections a user made during a session into rules the next agent follows. Collects every correction (explicit ones, edits the user made to files you wrote, repeated nudges, reverts), generalizes each to the right level, confirms the why, and writes it as rule plus reason into the project's DESIGN.md, a project skill, or a lint check. Only runs when explicitly invoked.
+description: Turn a session's design corrections into rules, with their why, in DESIGN.md, a project skill, or a lint check.
 disable-model-invocation: true
 ---
 
@@ -59,6 +59,8 @@ Would a fresh agent building a DIFFERENT component in this repo make the same mi
         Otherwise it's a project rule.
 ```
 
+**Completion criterion:** every Phase 1 correction ends as Skipped, Rewrite, Conflict, Check candidate, or a rule to generalize.
+
 ### Phase 3: Generalize and find the why
 
 Pick the narrowest level that would have prevented the mistake on the next, different component:
@@ -76,6 +78,8 @@ Write the rule strictly: values and token names from this codebase, "always" or 
 Then the why. Use the user's reason, in their words, when they gave one. Otherwise write your best candidate, mark it *inferred*, and put it in the questions for the user.
 
 **Self-test before proposing:** read only the rule and its why, then picture the original task. Would an agent that knows nothing else produce what the user wanted? If it could still produce the wrong version, the rule is too vague. Add the value, the token, or the exception.
+
+**Completion criterion:** every kept rule has a level and a why marked as the user's or *inferred*.
 
 ### Phase 4: Decide where it goes
 
@@ -121,7 +125,7 @@ Write only the approved items. Show the resulting diff of DESIGN.md (and any ski
 | # | You said | Rule | Why | Where |
 | --- | --- | --- | --- | --- |
 | 1 | "no, semi-transparent shadow, not a border" | Raised surfaces use `shadow-raised`, never a solid border | Solid borders look flat and heavy; shadows adapt to both themes | DESIGN.md › Surfaces |
-| 2 | Changed `duration: 400` → `200` in `Dropdown.tsx` | Dropdowns and popovers open in 150–200ms | *inferred:* 400ms felt sluggish on a surface opened many times a day | DESIGN.md › Motion |
+| 2 | Changed `duration: 400` → `200` in `Dropdown.tsx` | Dropdowns open in 200ms | *inferred:* 400ms felt sluggish on a surface opened many times a day | DESIGN.md › Motion |
 
 ### Needs your answer
 

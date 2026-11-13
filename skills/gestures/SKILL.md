@@ -1,6 +1,6 @@
 ---
 name: gestures
-description: Build drag, swipe, and sheet interactions that track the finger 1:1 and stay interruptible. Use when building or fixing anything the user drags, swipes, flings, holds, or dismisses with a gesture — drawers, sheets, swipe-to-dismiss toasts and cards, drag-to-reorder, pull-to-refresh, hold-to-confirm — or when a gesture feels laggy, disconnected from the finger, jumps on release, or can't be caught mid-animation. Triggers on — gesture, drag, draggable, swipe, swipe to dismiss, fling, momentum, velocity, drawer, sheet, bottom sheet, snap points, Vaul, dragConstraints, dragElastic, dragMomentum, onDragEnd, whileDrag, useMotionValue, rubber-band, overscroll, pull to refresh, hold to delete, press and hold, touch-action, dismiss threshold, "doesn't follow my finger", "jumps when I let go", "can't grab it mid-animation".
+description: Build drag, swipe, and sheet interactions that track the finger 1:1 and stay interruptible. Use when building or fixing anything the user drags, swipes, flings, holds, or dismisses with a gesture — drawers, sheets, swipe-to-dismiss toasts and cards, drag-to-reorder, pull-to-refresh, hold-to-confirm — or when a gesture feels laggy, disconnected from the finger, jumps on release, or can't be caught mid-animation. Triggers on — gesture, drag, swipe, fling, sheet, snap points, Vaul, Motion drag props, rubber-band, pull to refresh, hold to delete, touch-action, "doesn't follow my finger", "jumps when I let go", "can't grab it mid-animation".
 ---
 
 # Gesture-Driven UI
@@ -9,7 +9,7 @@ How to build gestures that feel physical. A gesture is direct manipulation: whil
 
 ## First decision: build it, or use a solution that exists?
 
-Doing a drawer gesture *right* means momentum-based dragging, overlay opacity matched to drag progress, velocity-aware dismissal, focus trapping, and Escape-to-close. That is weeks of edge cases, not an afternoon. **For a bottom sheet / drawer, default to [Vaul](https://vaul.emilkowal.ski/)** — it exists precisely because this is hard to hand-roll. Build the gesture yourself only when no library covers the interaction (custom swipe cards, bespoke drag interactions). Use the `pick-ui-library` skill when unsure.
+Doing a drawer gesture *right* means momentum-based dragging, overlay opacity matched to drag progress, velocity-aware dismissal, focus trapping, and Escape-to-close. That is weeks of edge cases, not an afternoon. **For a bottom sheet / drawer, default to [Vaul](https://vaul.emilkowal.ski/)** — it exists precisely because this is hard to hand-roll. Build the gesture yourself only when no library covers the interaction (custom swipe cards, bespoke drag interactions). When unsure, read `../pick-ui-library/SKILL.md`.
 
 ## The two phases of every gesture
 
@@ -20,7 +20,8 @@ Is the pointer currently down?
 ├── Yes → TRACK phase: position maps 1:1 to the pointer.
 │         No easing. No duration. No spring. The element IS the finger.
 └── No  → RELEASE phase: physics finishes the motion.
-          A spring seeded with the release velocity. Never a keyframe.
+          A spring seeded with the release velocity, or a CSS transition
+          when the component is CSS-only (Vaul, hold-to-confirm). Never a keyframe.
 ```
 
 ### Track phase rules
@@ -32,9 +33,9 @@ Is the pointer currently down?
 
 ### Release phase rules
 
-- **Finish with a spring, seeded with the gesture's velocity.** The element should leave the finger at the speed it was moving. A fixed-duration ease here makes every fling land identically, which reads as fake.
+- **Custom drags finish with a spring, seeded with the gesture's velocity.** The element should leave the finger at the speed it was moving. A fixed-duration ease here makes every fling land identically, which reads as fake.
 - **Dismiss on distance OR velocity.** Passing a distance threshold (~40–50% of travel) dismisses, but so does a fast flick over a short distance. In Motion, read both from `onDragEnd`'s `info.offset` and `info.velocity`. Distance-only thresholds make flicks feel ignored.
-- **Bounce belongs only at the end of a drag.** A drag applies force — like throwing a ball at a wall — so a slight bounce on release feels physical. The same element closed by a button press gets **zero** bounce: no force was applied. Keep the value small, and remember bounce scales inversely with element size (smaller elements need more bounce to read the same).
+- **Bounce belongs only at the end of a drag.** A drag applies force — like throwing a ball at a wall — so a slight bounce on release feels physical. The same element closed by a button press gets **zero** bounce: no force was applied. Keep bounce at 0.1–0.3, and remember bounce scales inversely with element size (smaller elements need more bounce to read the same).
 - **Snap-back is fast.** If the gesture doesn't pass the threshold, return quickly with the spring — a slow snap-back feels like the UI is disagreeing with the user in slow motion.
 
 ## Interruptibility is non-negotiable
@@ -55,17 +56,22 @@ One source of truth means the overlay is always exactly as faded as the drawer i
 ## Motion drag props
 
 ```jsx
+const y = useMotionValue(0);
+
 <motion.div
   drag="y"
+  style={{ y }}
   dragConstraints={{ top: 0 }}
   dragElastic={0.2}
+  dragMomentum={false}
   onDragEnd={(e, info) => {
     if (info.offset.y > threshold || info.velocity.y > 500) dismiss();
+    else animate(y, 0, { type: 'spring', duration: 0.5, bounce: 0.2, velocity: info.velocity.y });
   }}
 />
 ```
 
-`dragMomentum` is on by default — right for a flung card, wrong for a simple reposition; disable it when the element should stop where the finger stops. `dragConstraints` takes a ref or bounds object.
+`dragMomentum` is on by default — right for a flung card, wrong for a simple reposition; disable it when the element should stop where the finger stops. The example above disables it because `onDragEnd` hands the release to its own spring. `dragConstraints` takes a ref or bounds object.
 
 ## Sheets without springs: the Vaul curve
 
@@ -73,8 +79,8 @@ Vaul mimics the iOS sheet with pure CSS to stay small: `cubic-bezier(0.32, 0.72,
 
 - A **small floating drawer** (not touching the screen edge) should override to ~200ms — the 500ms iOS timing only reads right on a full-width edge-attached sheet:
   ```css
-  [vaul-drawer]  { transition: transform 0.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
-  [vaul-overlay] { transition: opacity  0.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
+  [data-vaul-drawer]  { transition: transform 0.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
+  [data-vaul-overlay] { transition: opacity  0.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
   ```
 - **The component must feel like a single entity.** If the drawer opens in 200ms, its height changes and content crossfades must live in the same timing family — one slow sub-animation makes the whole thing feel broken.
 
