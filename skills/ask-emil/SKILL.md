@@ -12,11 +12,9 @@ A **flow** is a path through the skills. Most UI work travels one **main flow**,
 
 ## The main flow: idea → ship
 
-1. **Does the flow make sense?** If the work is a multi-step journey (onboarding, signup, checkout, invites, settings), start with **`/walk-the-flow`**. It maps the journey, walks it as the user, tests it as a grey clickable wireframe, and writes a script for testing on real people. **Path before polish**: nothing below is worth doing on a dead end. Skip it for a single component.
+1. **Not sure what it should look or feel like?** Detour through **`/prototype`**. It builds several genuinely different versions behind a live picker, then promotes the one you pick into the real code. Reach for it whenever a design question is hard to settle in words.
 
-2. **Not sure what it should look or feel like?** Detour through **`/prototype`**. It builds several genuinely different versions behind a live picker, then promotes the one you pick into the real code. Reach for it whenever a design question is hard to settle in words.
-
-3. **Build it.** Pick the builder by what's moving:
+2. **Build it.** Pick the builder by what's moving:
    - **`/pick-ui-library`** first if the task needs a dependency (dropdown, dialog, toast, drawer, command menu, drag and drop, charts). Don't let the agent hand-roll a toast.
    - **`/animate`** for one animation on the web: whether to animate at all, then tool, properties, curve, duration, interruption, exit.
    - **`/choreograph`** when several elements move together: staggers, hero entrances, view swaps, an item leaving while siblings close the gap.
@@ -24,15 +22,13 @@ A **flow** is a path through the skills. Most UI work travels one **main flow**,
    - **`/animate-expo`** for any of the above in React Native or Expo.
    - **`/ask-sonner`** when the work is toasts with Sonner.
 
-4. **Try to break it.** Before calling it done:
+3. **Try to break it.** Before calling it done:
    - **`/break-ui`** feeds it worst-case data (long names, empty lists, huge counts, emoji, non-Latin text) behind a toggle and reports what broke.
    - **`/review-animations`** reviews the motion in the diff against a strict bar. Default to flagging; approval is earned.
    - **`/mobile-native`** if it runs on a phone as a web app: sticky hover, the 100vh bug, inputs that zoom, safe areas.
    - **`/animation-performance`** if anything drops frames.
 
-5. **Package it.** **`/package-my-work`** turns the finished work into a short, high-res video for X, a newsletter, or a launch post.
-
-6. **Learn from the session.** **`/learn-taste`** closes the loop. Run it at the end, in the same session, before you clear: it collects every design correction you made (including edits you made yourself) and turns each into a rule with its why, so the next agent doesn't repeat the mistake.
+4. **Learn from the session.** **`/learn-taste`** closes the loop. Run it at the end, in the same session, before you clear: it collects every design correction you made (including edits you made yourself) and turns each into a rule with its why, so the next agent doesn't repeat the mistake.
 
 ## Upkeep: a codebase that already exists
 
@@ -69,10 +65,8 @@ Model-invoked skills the others lean on. Reach for them directly when the **know
 | "What could animate here?" | `/find-animation-opportunities` |
 | "Too much is moving" | `/remove-animations` |
 | "Give me a few options" | `/prototype` |
-| "Is this good UX?" | `/walk-the-flow` |
 | "Which library should I use?" | `/pick-ui-library` |
 | "Works in Chrome, feels wrong on my phone" | `/mobile-native` |
 | "Try the worst case" | `/break-ui` |
 | "What's that bouncy thing called?" | `/animation-vocabulary` |
-| "Make me a video of this" | `/package-my-work` |
 | "Stop making that mistake" | `/learn-taste` |
