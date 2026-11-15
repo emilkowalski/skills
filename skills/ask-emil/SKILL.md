@@ -6,8 +6,6 @@ disable-model-invocation: true
 
 # Ask Emil
 
-You don't remember every skill, so ask.
-
 Before stating what a skill does or recommending one, read that skill's SKILL.md: the summaries here are for orientation only. Then recommend **one** skill (or one short sequence) for the user's situation, say why in a sentence, and name the skill they'd reach for next. Don't list the whole map back at them.
 
 A **flow** is a path through the skills. Most UI work travels one **main flow**, from idea to shipped. Some skills are **upkeep** you run on a codebase that already exists, some are **references** that sit underneath everything, and a few stand alone.
